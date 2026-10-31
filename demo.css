@@ -1,0 +1,67 @@
+/* Hanya untuk kebutuhan mockup: penanda demo, pemilih akun peraga,
+   dan beberapa fallback kecil untuk kelas yang di aplikasi asli
+   disediakan oleh komponen React. */
+
+.sdl-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.sdl-logo-fallback {
+  font-size: 12px; font-weight: 900; letter-spacing: .4px; color: #1d3046;
+}
+.sdlv3__logo strong { font-size: 26px; font-weight: 900; letter-spacing: 1px; }
+
+/* avatar dalam menu akun di header */
+.sdl-nav-account summary .r2d3-avatar { width: 30px; height: 30px; font-size: 10px; }
+
+/* ---- penanda demo ---- */
+.mk-badge {
+  position: fixed; left: 14px; bottom: 14px; z-index: 200;
+  background: #d5ad67; color: #17253b; border-radius: 999px;
+  padding: 8px 14px; font-size: 10px; font-weight: 900; letter-spacing: .8px;
+  box-shadow: 0 8px 24px rgba(23, 37, 59, .25); pointer-events: none;
+}
+.mk-toast {
+  position: fixed; right: 18px; bottom: 18px; z-index: 210; max-width: min(420px, calc(100vw - 36px));
+  background: var(--card); color: var(--ink); border: 1px solid var(--border);
+  border-left: 4px solid #4b78ba; border-radius: 12px; padding: 14px 17px;
+  font-size: 12px; line-height: 1.6; box-shadow: 0 18px 44px rgba(10, 22, 41, .22);
+}
+.mk-toast.error { border-left-color: #c95968; }
+.mk-toast.success { border-left-color: #2cab88; }
+
+/* ---- pemilih akun peraga di layar masuk ---- */
+.mk-demo-accounts { display: grid; gap: 9px; margin-top: 26px; max-width: 470px; }
+.mk-demo-account {
+  display: block; width: 100%; text-align: left; color: #e7eef6;
+  background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .17);
+  border-radius: 12px; padding: 13px 15px;
+}
+.mk-demo-account:hover { background: rgba(255, 255, 255, .13); border-color: #d5ad67; }
+.mk-demo-account.is-picked { border-color: #d5ad67; background: rgba(213, 173, 103, .16); }
+.mk-demo-account strong { display: block; font-size: 12.5px; font-weight: 800; }
+.mk-demo-account small { display: block; font-size: 10.5px; color: #a8bdd2; margin-top: 4px; }
+.mk-demo-account em { display: block; font-style: normal; font-size: 10.5px; color: #c6d4e2; margin-top: 7px; line-height: 1.55; }
+
+/* ---- label pemisah di dropdown akun ---- */
+.mk-dropdown-label {
+  font-size: 9px; font-weight: 900; letter-spacing: 1px; color: var(--muted);
+  padding: 11px 12px 5px; border-top: 1px solid var(--border); margin-top: 5px;
+}
+
+/* ---- tabel surat masuk: perihal dua baris ---- */
+.data-table td small { display: block; color: var(--muted); font-size: 10.5px; line-height: 1.5; margin-top: 4px; }
+
+/* Daftar akun peraga versi ringkas untuk layar kecil, karena pada lebar
+   < 900px `.auth-hero` disembunyikan oleh style.css aplikasi asli. */
+.mk-mobile-accounts { display: none; gap: 8px; margin-top: 16px; }
+.mk-mobile-accounts .mk-demo-account {
+  color: var(--ink); background: var(--subtle); border-color: var(--border);
+}
+.mk-mobile-accounts .mk-demo-account small { color: var(--muted); }
+
+@media (max-width: 900px) {
+  .mk-badge { left: 10px; bottom: 10px; font-size: 9px; padding: 6px 11px; }
+  .mk-demo-accounts { display: none; }
+  .mk-mobile-accounts { display: grid; }
+}
