@@ -1,20 +1,1375 @@
 <!doctype html>
 <html lang="id" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex">
-  <meta name="description" content="Mockup antarmuka SIERA DELTA LIMA — halaman peraga statis dengan data fiktif, tanpa backend.">
-  <title>Mockup · SIERA DELTA LIMA</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23c39a58'/><text x='50' y='68' font-size='46' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%231d3046'>SDL</text></svg>">
-  <link rel="stylesheet" href="reset.css">
-  <link rel="stylesheet" href="app.css">
-  <link rel="stylesheet" href="demo.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIERA DELTA LIMA (prototipe)</title>
+<script>
+/* Tema dipasang sebelum render agar tidak berkedip. localStorage hanya untuk preferensi tema. */
+(function(){var p='system';try{p=localStorage.getItem('sdl-theme')||'system'}catch(e){}
+var d=p==='dark'||(p==='system'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+document.documentElement.setAttribute('data-theme',d?'dark':'light')})();
+</script>
+<style>
+/* =====================================================================
+   1. TOKEN — disalin dari apps/frontend/src/style.css baris 2–3 apa adanya,
+      lalu diubah HANYA sesuai usulan yang disetujui:
+      --muted terang #8191a4 -> #5f6f84 · --gold-ink terang #98703b -> #8a6431
+      baru: --focus, --focus-inverse, --border-input, --header-h, --fs-*, --lh-*
+   ===================================================================== */
+:root{font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-synthesis:none;color-scheme:light;--bg:#f5f7fb;--card:#fff;--ink:#14243e;--ink-2:#344b68;--muted:#5f6f84;--border:#e5eaf1;--navy:#111f35;--navy-2:#1d3150;--gold:#d5ad67;--shadow:0 12px 36px rgba(30,49,77,.05);--subtle:#f4f7fb;--gold-ink:#8a6431;
+  --focus:#2f5f9e;--focus-inverse:#8fb6e8;--border-input:#76869a;--header-h:75px;
+  --fs-12:12px;--fs-13:13px;--fs-14:14px;--fs-16:16px;--fs-20:20px;--fs-24:24px;--lh-body:1.5;--lh-tight:1.3}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0c1525;--card:#162438;--ink:#edf2f7;--ink-2:#c7d4e6;--muted:#95a8bd;--border:#2c3b52;--navy:#091321;--navy-2:#162c48;--shadow:0 12px 30px #02091630;--subtle:#1c2e45;--gold-ink:#dfb978;
+  --focus:#8fb6e8;--border-input:#6b7f99}
+@media (max-width:640px){:root{--header-h:67px}}
+
+/* =====================================================================
+   2. VARIABEL KOMPONEN PROTOTIPE — BUKAN token style.css.
+      Usulan nilai (status, warna unit gelap, tombol primer) yang perlu
+      keputusan sebelum dipindah ke style.css. Lihat laporan.
+   ===================================================================== */
+:root{--proto-h:48px;--primary:#243f6c;--st-neutral:#344b68;--st-info:#2c5a96;--st-warn:#8a5a12;--st-danger:#a8323e;--st-ok:#1c6e50;--danger-bg:#fdf1f2;
+  --u-urmin:#1d7a64;--u-ren:#3b67a8;--u-sumda:#7a55a0;--u-binfung:#8f6224;--u-spip:#344b68;
+  --us-urmin:#e7f5f0;--us-ren:#ebf1fb;--us-sumda:#f2edf8;--us-binfung:#f8f0e4;--us-spip:#eef2f7;
+  --side-ink:#c9d6e3;--side-group:#95a8bd;
+  /* warna unit di atas navy (sidebar), sama di kedua tema */
+  --un-urmin:#c7d4e6;--un-ren:#c7d4e6;--un-sumda:#c7d4e6;--un-binfung:#c7d4e6}
+:root[data-theme=dark]{--primary:#3a5f93;--st-neutral:#c7d4e6;--st-info:#9fc2f0;--st-warn:#f0c27a;--st-danger:#ff9ea6;--st-ok:#7fdcb5;--danger-bg:#3a2228;
+  --u-urmin:#6fd1b5;--u-ren:#9fbff0;--u-sumda:#c9aeea;--u-binfung:#e6be82;--u-spip:#c7d4e6;
+  --us-urmin:#183a34;--us-ren:#1d3150;--us-sumda:#2e2645;--us-binfung:#3a2f1e;--us-spip:#1c2e45}
+body.proto-off{--proto-h:0px}
+
+/* 3. DASAR */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(var(--header-h) + 8px);scroll-padding-bottom:calc(var(--proto-h) + 8px)}
+body{margin:0;min-width:320px;background:var(--bg);color:var(--ink);font-size:var(--fs-14);line-height:var(--lh-body);padding-bottom:var(--proto-h)}
+h1,h2,h3{line-height:var(--lh-tight);margin:0;font-weight:700}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+img{max-width:100%}
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.on-navy :focus-visible{outline-color:var(--focus-inverse)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ic{flex:none;display:block}
+.skip{position:absolute;left:8px;top:-60px;z-index:200;background:var(--card);color:var(--ink);padding:10px 16px;border:2px solid var(--focus);border-radius:8px;font-weight:600;text-decoration:none}
+.skip:focus{top:8px}
+[tabindex="-1"]:focus{outline:none}
+.tlink{color:var(--ink-2);font-weight:600;font-size:var(--fs-13);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.sample{display:inline-block;font-size:var(--fs-12);font-weight:600;color:var(--muted);border:1px dashed var(--border-input);border-radius:4px;padding:0 6px;line-height:1.6;white-space:nowrap}
+.muted{color:var(--muted)}
+.num{text-align:right!important;font-variant-numeric:tabular-nums}
+.mono{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* 4. KONTROL */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 16px;border:1px solid var(--border-input);border-radius:8px;background:var(--card);color:var(--ink);font-size:var(--fs-14);font-weight:600;text-decoration:none;white-space:nowrap}
+.btn:hover:not(:disabled){background:var(--subtle)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--primary);filter:brightness(1.12)}
+.btn-danger{background:#a8323e;border-color:#a8323e;color:#fff}
+.btn-danger:hover:not(:disabled){background:#a8323e;filter:brightness(1.1)}
+.btn-sm{min-height:32px;padding:4px 12px;font-size:var(--fs-13)}
+.btn-block{width:100%;min-height:44px}
+.btn:disabled{opacity:.55}
+.icon-btn{width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--ink-2);flex:none}
+.icon-btn:hover{background:var(--subtle)}
+.why{font-size:var(--fs-13);color:var(--muted)}
+.field{margin-top:16px}
+.field label,.flabel{display:block;font-size:var(--fs-13);font-weight:600;color:var(--ink);margin-bottom:6px}
+.input,select.input{width:100%;min-height:40px;padding:8px 12px;border:1px solid var(--border-input);border-radius:8px;background:var(--card);color:var(--ink);font-size:var(--fs-14)}
+.input::placeholder{color:var(--muted);opacity:1}
+.input[aria-invalid=true]{border-color:var(--st-danger);box-shadow:0 0 0 1px var(--st-danger)}
+.err{display:flex;gap:6px;align-items:flex-start;margin-top:6px;font-size:var(--fs-13);color:var(--st-danger);font-weight:600}
+.hint{margin-top:6px;font-size:var(--fs-13);color:var(--muted)}
+@media (max-width:640px){.input,select.input{font-size:var(--fs-16)}}
+.alert{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--st-danger);border-left-width:4px;border-radius:8px;background:var(--danger-bg);color:var(--ink);margin-top:16px}
+.alert .ic{color:var(--st-danger);margin-top:2px}
+.alert strong{display:block}
+.alert p{font-size:var(--fs-13);margin-top:2px}
+
+/* Badge status: teks + titik. Warna hanya untuk status. */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-13);font-weight:600;white-space:nowrap;color:var(--st-neutral)}
+.badge::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.st-neutral{color:var(--st-neutral)}.st-info{color:var(--st-info)}.st-warn{color:var(--st-warn)}.st-danger{color:var(--st-danger)}.st-ok{color:var(--st-ok)}
+.badge.st-neutral::before{background:var(--muted)}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-12);font-weight:600;color:var(--ink-2);border:1px solid var(--border-input);border-radius:4px;padding:0 6px;line-height:1.6;white-space:nowrap}
+.prio{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-13);font-weight:600;white-space:nowrap}
+.late{color:var(--st-danger);font-weight:600}
+
+/* 5. HEADER — bentuk mengikuti header produksi (App.tsx .sdl-header + PortalRefresh.css
+      .sdl-nav-clean): tombol nav berikon + label + jumlah, pill latar untuk item aktif,
+      separator, tombol tema kotak membulat, menu akun avatar + nama + chevron.
+      Ukuran nav = produksi (12px/700, tombol 38px, ikon 17px). Sengaja beda: penanda aktif kedua berupa garis
+      --gold-ink (pill prod 1.07:1), label tidak pernah disembunyikan (prod ikon saja 770–900px). */
+.hdr{position:sticky;top:0;z-index:50;height:var(--header-h);display:flex;align-items:center;gap:16px;padding:0 clamp(16px,2.6vw,38px);background:var(--card);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:12px;color:var(--ink);text-decoration:none;flex:0 1 auto;min-width:0;min-height:44px;border-radius:6px}
+.brand img{height:42px;width:42px;display:block;flex:none}
+.brand-words{min-width:0}
+.brand-words strong{display:block;font-size:var(--fs-14);font-weight:900;letter-spacing:.025em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Wordmark satu warna (keputusan pemilik): "DELTA LIMA" tidak dibedakan warnanya */
+.brand-words em{font-style:normal;color:inherit}
+.brand-words small{display:block;margin-top:2px;font-size:var(--fs-12);font-weight:600;letter-spacing:.01em;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hnav{margin-left:auto;min-width:0}
+.hnav>ul{display:flex;align-items:center;margin:0;padding:0;list-style:none;gap:4px}
+.hnav li{position:relative;display:flex}
+.hnav a,.hnav .nav-btn{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 12px;border:0;border-radius:9px;background:none;font-size:var(--fs-12);font-weight:700;color:var(--ink-2);text-decoration:none;white-space:nowrap}
+.hnav a:hover,.hnav .nav-btn:hover,.hnav .nav-btn[aria-expanded=true]{background:var(--subtle);color:var(--ink)}
+/* Item aktif: pill latar seperti produksi + bingkai --border-input (3.72:1) — tanpa warna emas */
+.hnav [aria-current=page],.hnav .nav-btn.is-current{background:var(--subtle);color:var(--ink);box-shadow:inset 0 0 0 1px var(--border-input)}
+.nav-count{font-variant-numeric:tabular-nums}
+.hnav .nav-count{margin-left:-4px}
+.hactions{display:flex;align-items:center;gap:8px}
+.hsep{width:1px;height:24px;background:var(--border);margin:0 4px;flex:none}
+.hdr .icon-btn{width:39px;height:39px;border-radius:11px}
+.acct-wrap{position:relative}
+.acct{display:flex;align-items:center;gap:9px;min-height:38px;padding:4px 7px 4px 5px;border:0;border-radius:9px;background:none;color:var(--ink-2)}
+.acct:hover,.acct[aria-expanded=true]{background:var(--subtle)}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--navy-2);color:#fff;font-size:var(--fs-12);font-weight:700;display:grid;place-items:center;flex:none}
+:root[data-theme=dark] .avatar{background:var(--primary)}
+.acct-name{max-width:143px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--fs-12);font-weight:700;color:var(--ink)}
+.burger{display:none}
+.menu{position:absolute;top:calc(100% + 10px);left:0;min-width:240px;background:var(--card);border:1px solid var(--border);border-radius:13px;box-shadow:0 19px 50px rgba(13,29,51,.16);padding:6px;z-index:60}
+.menu-r{left:auto;right:0}
+.menu a,.menu>button{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:8px 12px;border-radius:8px;font-size:var(--fs-14);color:var(--ink);text-decoration:none;background:none;border:0;text-align:left}
+.menu a .ic,.menu>button .ic{color:var(--ink-2)}
+.menu a:hover,.menu>button:hover{background:var(--subtle)}
+.menu a[aria-current=page]{font-weight:600;box-shadow:inset 3px 0 0 var(--ink)}
+.menu-who{padding:8px 12px 10px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.menu-who strong{display:block}
+.menu-who span{font-size:var(--fs-13);color:var(--muted)}
+.theme-set{border:0;margin:6px 0;padding:8px 12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.theme-set legend{font-size:var(--fs-13);font-weight:600;padding:0;margin-bottom:4px}
+.theme-set label{display:flex;align-items:center;gap:8px;min-height:32px;font-size:var(--fs-14)}
+.theme-set input{width:18px;height:18px;margin:0;accent-color:var(--primary)}
+@media (max-width:1199px){.acct-name{display:none}.acct{padding:4px 6px}}
+/* 901–1100px: teks merek disembunyikan secara visual (seperti produksi ≤1050px) agar label nav
+   tetap utuh. Disembunyikan dengan pola sr-only supaya tautan logo tetap punya nama aksesibel. */
+@media (min-width:901px) and (max-width:1100px){
+  .brand-words{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .hnav a,.hnav .nav-btn{padding:0 10px}
+  }
+@media (max-width:900px){.hnav,.hsep{display:none}.burger{display:grid}.hactions{margin-left:auto}.hdr{gap:12px;padding:0 16px}}
+@media (max-width:480px){.hactions{display:none}.hdr .burger{width:44px;height:44px}.hdr{padding:0 12px}.brand img{height:40px;width:40px}}
+
+/* 6. DRAWER (≤900px) */
+.scrim{position:fixed;inset:0;background:rgba(6,22,41,.6);z-index:99}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(320px,88vw);background:var(--navy);color:var(--side-ink);z-index:100;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .2s ease}
+.drawer.open{transform:none}
+.drawer-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 12px 12px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.drawer-brand{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:var(--fs-14)}
+.drawer-brand img{width:32px;height:32px}
+.icon-btn.inv{background:transparent;border-color:rgba(255,255,255,.25);color:#fff;width:44px;height:44px}
+.drawer-scroll{overflow-y:auto;flex:1;padding:8px 12px 16px}
+.drawer .theme-set{border-color:rgba(255,255,255,.12);color:#fff;padding:8px 12px}
+.drawer .theme-set input{accent-color:#c7d4e6}
+.drawer-who{padding:12px;color:#fff;border-top:1px solid rgba(255,255,255,.12);margin-top:12px}
+.drawer-who span{display:block;font-size:var(--fs-13);color:var(--side-group)}
+.drawer .side-link .nav-count{margin-left:auto}
+
+/* 7. WORKSPACE */
+.work{display:flex;align-items:flex-start}
+.side{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h) - var(--proto-h));height:calc(100dvh - var(--header-h) - var(--proto-h));width:256px;flex:none;background:var(--navy);color:var(--side-ink);display:flex;flex-direction:column}
+.side-unit{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.unit-chip{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-12);font-weight:700;color:var(--uc);border:1px solid currentColor;border-radius:4px;padding:1px 8px}
+.side-unit strong{display:block;color:#fff;font-size:var(--fs-16);margin-top:8px;line-height:1.3}
+.side-unit p{font-size:var(--fs-13);color:var(--side-group);margin-top:4px}
+.side-scroll{flex:1;overflow-y:auto;padding:8px 12px 16px}
+.side-group{font-size:var(--fs-12);letter-spacing:.04em;font-weight:600;color:var(--side-group);margin:16px 12px 6px;text-transform:uppercase}
+.side-list{list-style:none;margin:0;padding:0}
+.side-link{position:relative;display:flex;align-items:center;gap:10px;min-height:40px;padding:8px 12px;border-radius:8px;color:var(--side-ink);text-decoration:none;font-size:var(--fs-14);font-weight:600;margin-bottom:2px}
+.side-link:hover{background:rgba(255,255,255,.07);color:#fff}
+.side-link[aria-current=page]{background:rgba(255,255,255,.1);color:#fff}
+.side-link[aria-current=page]::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:2px;background:#fff}
+.side-foot{padding:12px;border-top:1px solid rgba(255,255,255,.1)}
+.back{display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;border:1px solid rgba(255,255,255,.22);border-radius:8px;color:#e1ecf4;text-decoration:none;font-size:var(--fs-13);font-weight:600}
+.back:hover{background:rgba(255,255,255,.07)}
+.work-main{flex:1;min-width:0}
+@media (max-width:1200px){.side{width:232px}}
+@media (max-width:900px){.side{display:none}}
+
+/* 8. HALAMAN */
+.page,.content{max-width:1280px;margin:0 auto;padding:20px 32px 48px}
+.content{max-width:1360px}
+@media (max-width:640px){.page,.content{padding:16px 16px 40px}}
+.crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px;list-style:none;margin:0 0 12px;padding:0;font-size:var(--fs-13);color:var(--muted)}
+.crumbs li{display:flex;align-items:center;gap:4px}
+.crumbs a{color:var(--ink-2);text-decoration:none;min-height:24px;display:inline-flex;align-items:center}
+.crumbs a:hover{text-decoration:underline}
+.crumbs [aria-current=page]{color:var(--ink);font-weight:600}
+.phead{display:flex;justify-content:space-between;gap:12px 16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px}
+.phead h1{font-size:var(--fs-24)}
+.phead .desc{margin-top:4px;color:var(--muted);max-width:72ch}
+.pactions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.back-link{display:inline-flex;align-items:center;gap:4px;min-height:32px;color:var(--ink-2);font-weight:600;font-size:var(--fs-13);text-decoration:none;margin-bottom:8px}
+.back-link:hover{text-decoration:underline}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;min-width:0}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;padding:12px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.panel-h .ttl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.panel-h h2{font-size:var(--fs-16)}
+.panel-h .sub{font-size:var(--fs-13);color:var(--muted);width:100%}
+.panel-b{padding:16px}
+.rows{list-style:none;margin:0;padding:0}
+.rows>li+li{border-top:1px solid var(--border)}
+.stack{display:grid;gap:16px}
+
+/* Tabel operasional */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;padding:12px 16px;border-bottom:1px solid var(--border)}
+.search{position:relative;flex:1 1 240px;max-width:420px;min-width:0}
+.search .ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search .input{padding-left:36px}
+.fgroup{display:flex;flex-direction:column;min-width:0;flex:0 1 200px}
+.fgroup .flabel{margin-bottom:4px}
+.tbl-wrap{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse;min-width:760px}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:12px 16px;border-bottom:1px solid var(--border);font-size:var(--fs-14)}
+.tbl thead th{font-size:var(--fs-12);font-weight:600;color:var(--muted);background:var(--subtle);padding:10px 16px;white-space:nowrap}
+.tbl tbody th{font-weight:400}
+.tbl tbody tr:last-child>*{border-bottom:0}
+.tbl tbody tr:hover{background:var(--subtle)}
+.tbl .sub{display:block;font-size:var(--fs-13);color:var(--muted);margin-top:2px}
+.tbl .mono{font-variant-numeric:tabular-nums;white-space:nowrap}
+.row-link{font-weight:600;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:24px}
+.row-link:hover{text-decoration:underline;text-underline-offset:3px}
+.nomatch td{text-align:center;color:var(--muted);padding:24px 16px}
+.pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:12px 16px;border-top:1px solid var(--border)}
+.pager-info{font-size:var(--fs-13);color:var(--muted)}
+.pager-ctl{display:flex;align-items:center;gap:8px;font-size:var(--fs-13)}
+.pager-note{width:100%;font-size:var(--fs-13);color:var(--muted)}
+
+/* Keadaan data */
+.state{padding:32px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.state h3{font-size:var(--fs-16)}
+.state p{color:var(--muted);max-width:56ch}
+.state .ic-wrap{width:44px;height:44px;border-radius:10px;background:var(--subtle);display:grid;place-items:center;color:var(--ink-2)}
+.state .btn{margin-top:8px}
+.state.error{flex-direction:row;align-items:flex-start;text-align:left;gap:12px;margin:16px;padding:16px;border:1px solid var(--st-danger);border-left-width:4px;border-radius:8px;background:var(--danger-bg)}
+.state.error .ic{color:var(--st-danger);margin-top:2px}
+.state.error p{color:var(--ink)}
+.state.loading{align-items:stretch;text-align:left}
+.sk-row{display:grid;grid-template-columns:1fr 2fr 1fr;gap:16px;padding:8px 0}
+.sk{height:14px;border-radius:4px;background:var(--subtle);border:1px solid var(--border)}
+.compact .state{padding:20px 16px}
+.compact .state.error{margin:12px}
+
+/* Tab segmented (ARIA tabs) */
+.seg{display:inline-flex;gap:2px;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:10px;max-width:100%;overflow-x:auto;margin-bottom:16px}
+.seg [role=tab]{min-height:36px;padding:6px 14px;border:0;border-radius:7px;background:none;font-size:var(--fs-14);font-weight:600;color:var(--ink-2);white-space:nowrap}
+.seg [role=tab][aria-selected=true]{background:var(--primary);color:#fff}
+.seg [role=tab]:focus-visible{outline-offset:-2px}
+
+/* Statistik ringkas: satu panel terbagi, bukan kartu identik */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0 0 16px;background:var(--card);border:1px solid var(--border);border-radius:10px}
+.stats>div{padding:14px 16px;border-left:1px solid var(--border);min-width:0}
+.stats>div:first-child{border-left:0}
+.stats dt{font-size:var(--fs-13);color:var(--muted);font-weight:600}
+.stats dt a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.stats dd{margin:2px 0 0;font-size:var(--fs-24);font-weight:700;line-height:1.3;font-variant-numeric:tabular-nums}
+.stats .hint{display:block;font-size:var(--fs-12);color:var(--muted);font-weight:400;line-height:1.5}
+.stats dd.late{color:var(--st-danger)}
+@media (max-width:640px){.stats{grid-template-columns:1fr 1fr}.stats>div:nth-child(3){border-left:0}.stats>div:nth-child(n+3){border-top:1px solid var(--border)}}
+
+/* 9. LOGIN — kartu di tengah; latar navy, atau foto monokrom + blur + lapisan navy bila foto tersedia */
+.auth{position:relative;isolation:isolate;overflow:hidden}
+.auth>*:not(.auth-bg){position:relative;z-index:1}
+.auth-bg{position:absolute;inset:0;z-index:0;background:var(--navy)}
+.auth-ph{position:absolute;inset:-24px;background-size:cover;background-position:center;filter:grayscale(1) blur(5px) contrast(1.05);transform:scale(1.04);opacity:0;transition:opacity 1.6s ease}
+.auth-ph.on{opacity:1}
+/* Lapisan navy menjaga kontras teks putih di atas foto (efektif ≥ navy 82%) dan identitas warna */
+.has-photo .auth-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(9,19,33,.78),rgba(9,19,33,.86))}
+@media (prefers-reduced-motion:reduce){.auth-ph{transition:none}}
+.auth{min-height:calc(100vh - var(--proto-h));min-height:calc(100dvh - var(--proto-h));background:var(--navy);display:grid;grid-template-rows:auto 1fr auto}
+.auth-top{display:flex;justify-content:flex-end;padding:16px clamp(16px,4vw,32px)}
+.auth-top .icon-btn{color:#d6dfea;border-color:rgba(255,255,255,.22);background:transparent}
+.auth-top .icon-btn:hover{background:rgba(255,255,255,.08)}
+.auth-top :focus-visible,.auth-foot :focus-visible{outline-color:var(--focus-inverse)}
+.auth-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:8px 16px 24px}
+.auth-mark{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff}
+.auth-mark img{width:72px;height:72px;margin-bottom:6px}
+.auth-name{font-size:var(--fs-16);font-weight:700;letter-spacing:.04em}
+.auth-org{font-size:var(--fs-14);color:#c3cfdc}
+.auth-card{width:100%;max-width:420px;background:var(--card);color:var(--ink);border-radius:12px;padding:32px;box-shadow:0 16px 40px rgba(0,0,0,.28)}
+.auth-card h1{font-size:var(--fs-20)}
+.auth-card .lead{color:var(--muted);margin-top:4px}
+.auth-card form{margin-top:20px}
+.auth-foot{display:flex;justify-content:flex-end;padding:12px clamp(16px,4vw,32px) 16px;font-size:var(--fs-12);color:#b9c8d8}
+.pw{position:relative}
+.pw .input{padding-right:48px}
+.pw-btn{position:absolute;right:2px;top:2px;width:40px;height:36px;display:grid;place-items:center;border:0;background:none;color:var(--ink-2);border-radius:6px}
+.device{display:flex;gap:8px;align-items:flex-start;font-size:var(--fs-13);margin:16px 0;color:var(--ink-2)}
+.device.is-ok .ic{color:var(--st-ok)}
+.otp{font-size:24px!important;letter-spacing:.3em;text-align:center;font-variant-numeric:tabular-nums}
+.link-btn{display:inline-flex;align-items:center;gap:6px;min-height:40px;margin-top:12px;border:0;background:none;color:var(--ink-2);font-weight:600;padding:0}
+.link-btn:hover{text-decoration:underline}
+.auth-help{margin-top:20px;font-size:var(--fs-13);color:var(--muted)}
+@media (max-width:640px){
+  .auth-center{justify-content:flex-start;padding-top:0}
+  .auth-mark img{width:56px;height:56px}
+  .auth-card{padding:24px 20px;border-radius:10px}
+  .auth-foot{justify-content:center}
+}
+
+/* 10. PORTAL */
+.portal-head p{color:var(--muted);margin-top:4px}
+/* Kepala Portal varian B: pita navy datar (versi ringkas hero produksi), tanpa gradasi/emas.
+   Cadangan opsi 2 (polos + garis) ada di scratchpad: fondasi.opsi2.html */
+.portal-head{background:var(--navy-2);color:#fff;border-radius:12px;padding:22px 26px}
+.portal-head h1{font-size:28px;color:#fff}
+.portal-head p{color:#c3cfdc!important}
+.portal-head :focus-visible{outline-color:var(--focus-inverse)}
+.portal-head .ph-row{align-items:center;flex-wrap:nowrap}
+.ph-row{display:flex;align-items:flex-end;justify-content:space-between;gap:8px 24px;flex-wrap:wrap}
+@media (max-width:640px){.portal-head h1{font-size:var(--fs-24)}.portal-head{padding:16px 18px;border-radius:10px}}
+@media (max-width:400px){.portal-head .ph-row>div>p{display:none}}
+/* Tab Portal: blok segmented seperti index.html; item aktif berisi --primary (teks putih 10.1:1; gelap 6.48:1) */
+.ptabs{display:inline-flex;max-width:100%;margin:16px 0 20px;padding:3px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto}
+.ptabs ul{display:flex;gap:2px;list-style:none;margin:0;padding:0}
+.ptabs a{display:flex;align-items:center;height:36px;padding:0 14px;border-radius:7px;font-size:var(--fs-14);font-weight:600;color:var(--ink-2);text-decoration:none;white-space:nowrap}
+.ptabs a:hover{color:var(--ink);background:var(--subtle)}
+.ptabs a[aria-current=page]{color:#fff;background:var(--primary)}
+.ptabs a:focus-visible{outline-offset:-2px}
+.sec-title{font-size:var(--fs-16);margin-bottom:10px}
+.launch{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;list-style:none;margin:0;padding:0}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:104px;padding:10px 6px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--ink);text-decoration:none;text-align:center}
+/* Monokrom seperti index.html: unit dibedakan nama + ikon, bukan warna */
+a.tile:hover{border-color:var(--ink-2)}
+.tile-ic{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--subtle);color:var(--ink);margin-bottom:4px}
+.tile-name{font-size:var(--fs-14);font-weight:600;line-height:1.3}
+.tile-desc{font-size:var(--fs-12);color:var(--muted);line-height:1.3}
+.tile.is-off{opacity:.6;cursor:not-allowed}
+.note{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:var(--fs-13);color:var(--ink-2)}
+.home-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;margin-top:24px}
+.news-row{display:flex;gap:14px;padding:12px 16px;width:100%;text-align:left;background:none;border:0;color:inherit;border-radius:0}
+.news-row:hover .news-title{text-decoration:underline;text-underline-offset:3px}
+.ph{width:88px;height:64px;flex:none;border-radius:6px;background:var(--subtle);border:1px solid var(--border);display:grid;place-items:center;color:var(--muted)}
+.news-txt{min-width:0;flex:1}
+.kat{display:block;font-size:var(--fs-12);font-weight:600;color:var(--muted)}
+.news-title{display:block;font-size:var(--fs-14);font-weight:600;color:var(--ink);margin-top:2px}
+.news-sum{display:block;font-size:var(--fs-13);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-row{display:flex;gap:12px;padding:12px 16px;align-items:flex-start}
+.ag-date{width:44px;flex:none;text-align:center;border:1px solid var(--border);border-radius:6px;padding:4px 0;line-height:1.2}
+.ag-date strong{display:block;font-size:var(--fs-16)}
+.ag-date span{font-size:var(--fs-12);color:var(--muted)}
+.ag-t{font-weight:600}
+.ag-m{font-size:var(--fs-13);color:var(--muted)}
+.simple-row{display:flex;gap:10px;padding:12px 16px;align-items:flex-start}
+.simple-row .ic{color:var(--ink-2);margin-top:2px}
+@media (max-width:1000px){.launch{grid-template-columns:repeat(3,minmax(0,1fr))}.home-grid{grid-template-columns:1fr}}
+@media (max-width:480px){
+  .launch{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .tile{height:84px;padding:6px 4px}
+  .tile-ic{width:30px;height:30px;margin-bottom:2px}
+  .tile-ic .ic{width:18px;height:18px}
+  .tile-name{font-size:var(--fs-12)}
+  .ph{width:64px;height:48px}
+}
+
+/* 11. DASHBOARD URMIN */
+.dash-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;margin-bottom:16px}
+.job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;padding:12px 16px;align-items:start}
+.job .meta{grid-column:1/-1;font-size:var(--fs-13);color:var(--muted)}
+.count-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px;min-height:44px;text-decoration:none;color:inherit}
+.count-row:hover{background:var(--subtle)}
+.count-row strong{font-variant-numeric:tabular-nums;font-size:var(--fs-16)}
+.toolrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;margin-bottom:16px}
+@media (max-width:1000px){.dash-grid{grid-template-columns:1fr}}
+
+/* 12. DETAIL */
+.dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px;margin:0}
+.dl div{min-width:0}
+.dl dt{font-size:var(--fs-13);color:var(--muted);font-weight:600}
+.dl dd{margin:2px 0 0}
+.dl .span{grid-column:1/-1}
+.timeline{list-style:none;margin:0;padding:0}
+.timeline li{position:relative;padding:0 0 14px 20px}
+.timeline li::before{content:"";position:absolute;left:4px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--ink-2)}
+.timeline li::after{content:"";position:absolute;left:7px;top:17px;bottom:0;width:2px;background:var(--border)}
+.timeline li:last-child::after{display:none}
+.timeline small{display:block;font-size:var(--fs-13);color:var(--muted)}
+.detail-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px}
+.file-row{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px;flex-wrap:wrap}
+@media (max-width:1000px){.detail-grid{grid-template-columns:1fr}}
+@media (max-width:640px){.dl{grid-template-columns:1fr}}
+
+/* Rentang tanggal */
+.range{border:0;margin:0;padding:0;min-width:0;flex:1 1 320px}
+.range legend{font-size:var(--fs-13);font-weight:600;padding:0;margin-bottom:4px}
+.range-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.range-row .fgroup{flex:1 1 140px}
+.range-row .flabel{font-weight:400;color:var(--ink-2)}
+.range-msg{width:100%;font-size:var(--fs-13);color:var(--muted);margin-top:4px}
+
+/* 13. DIALOG & TOAST */
+.dlg-backdrop{position:fixed;inset:0;background:rgba(6,22,41,.55);display:grid;place-items:center;padding:16px;z-index:120}
+.dlg{width:min(560px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--border);border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+.dlg-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:16px 20px;border-bottom:1px solid var(--border)}
+.dlg-h h2{font-size:var(--fs-20)}
+.dlg-h .kat{margin-bottom:4px}
+.dlg-b{padding:16px 20px;max-width:72ch}
+.dlg-b p+p{margin-top:12px}
+.dlg-f{display:flex;justify-content:space-between;gap:12px;padding:12px 20px;border-top:1px solid var(--border);flex-wrap:wrap}
+.toasts{position:fixed;right:16px;bottom:calc(var(--proto-h) + 16px);z-index:150;display:flex;flex-direction:column;gap:8px;max-width:min(400px,calc(100vw - 32px))}
+.toast{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--card);border:1px solid var(--border-input);border-left:4px solid var(--st-ok);border-radius:8px;box-shadow:0 8px 24px rgba(17,31,53,.18)}
+.toast .ic{color:var(--st-ok);margin-top:2px}
+.toast.toast-err{border-left-color:var(--st-danger)}
+.toast.toast-err .ic{color:var(--st-danger)}
+
+/* 14. BILAH PROTOTIPE (bukan bagian desain produksi) */
+.proto{position:fixed;left:0;right:0;bottom:0;height:var(--proto-h);z-index:140;display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--card);border-top:2px dashed var(--border-input);font-size:var(--fs-13);overflow-x:auto;white-space:nowrap}
+.proto label{display:flex;align-items:center;gap:6px;font-weight:600}
+.proto select{min-height:32px;padding:2px 6px;border:1px solid var(--border-input);border-radius:6px;background:var(--card);color:var(--ink);font-size:var(--fs-13)}
+.proto-tag{font-weight:700;color:var(--ink)}
+.proto-btn{min-height:32px;padding:2px 10px;border:1px solid var(--border-input);border-radius:6px;background:var(--card);font-size:var(--fs-13)}
+body.proto-off .proto{display:none}
+
+/* 15. DASHBOARD UNIT (halaman 7) — daftar modul, bukan kartu */
+.mod-group+.mod-group{border-top:1px solid var(--border)}
+.mod-group h3{font-size:var(--fs-14);font-weight:600;color:var(--ink-2);padding:12px 16px 0}
+.mod-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:start;padding:10px 16px}
+.mod-ic{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:var(--subtle);color:var(--ink)}
+.mod-txt p{font-size:var(--fs-13);color:var(--muted)}
+.mod-name{display:inline-flex;align-items:center;min-height:24px;font-weight:600;color:var(--ink-2)}
+.mod-soon{display:inline-flex;align-items:center;gap:4px;margin-top:2px;font-size:var(--fs-13);font-weight:600;color:var(--ink-2);white-space:nowrap}
+@media (max-width:480px){.mod-soon{grid-column:2}}
+
+/* 16. KELOLA (halaman 8) */
+.phead+.ptabs{margin-top:-4px}
+.callout{display:flex;gap:10px;align-items:flex-start;margin:0 0 16px;padding:12px 14px;max-width:96ch;border:1px solid var(--border);border-left:4px solid var(--st-info);border-radius:8px;background:var(--card);font-size:var(--fs-13);color:var(--ink)}
+.callout .ic{color:var(--st-info);margin-top:2px}
+.dlg .callout{margin:12px 0 0;background:var(--subtle)}
+.u-name{font-weight:600}
+.row-acts{display:flex;gap:8px;flex-wrap:wrap}
+textarea.input{min-height:80px;resize:vertical;line-height:var(--lh-body)}
+.secret{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:12px}
+.secret code{flex:1 1 220px;display:flex;align-items:center;padding:8px 12px;border:1px dashed var(--border-input);border-radius:8px;background:var(--subtle);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:var(--fs-16);letter-spacing:.04em;word-break:break-all}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+.hnav .ic{width:17px;height:17px;stroke-width:1.7}
+.hdr .icon-btn .ic{stroke-width:1.7}
+</style>
 </head>
 <body>
-  <div id="root"></div>
-  <noscript><p style="padding:40px;font-family:sans-serif">Mockup ini memerlukan JavaScript untuk berpindah halaman.</p></noscript>
-  <script src="mock-data.js"></script>
-  <script src="mock-app.js"></script>
+<a class="skip" href="#main" data-action="skip">Langsung ke konten utama</a>
+<div id="app"></div>
+<div id="overlay-root"></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<div id="sr-live" class="sr-only" aria-live="polite"></div>
+<noscript><p style="padding:16px">Prototipe ini membutuhkan JavaScript.</p></noscript>
+
+<div id="proto" class="proto" role="region" aria-label="Kontrol prototipe">
+  <span class="proto-tag">Prototipe</span>
+  <span>Semua data adalah data contoh fiktif.</span>
+  <label>Halaman <select id="p-page"></select></label>
+  <label>Peran <select id="p-role"><option value="operator">Operator Urmin</option><option value="kabag">Kabagrenmin</option><option value="superadmin">Superadmin</option></select></label>
+  <label>Keadaan data <select id="p-state"><option value="normal">Normal</option><option value="loading">Memuat</option><option value="empty">Kosong</option><option value="error">Error</option></select></label>
+  <button type="button" class="proto-btn" id="p-hide">Sembunyikan bilah (Alt+Shift+P)</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* =====================================================================
+   STRUKTUR JS (catatan serah terima)
+   - S            : state global (peran, keadaan data, tab aktif)
+   - ROUTES/resolve(): peta hash -> fungsi render halaman
+   - view*()      : fungsi render per halaman, mengembalikan string HTML
+   - Komponen     : ic(), badge(), klas(), prio(), crumbs(), phead(), panel(),
+                    dataBlock(), tbl(), pager(), tabs(), workspace(), header()
+   - Interaksi    : delegasi klik lewat atribut data-action (lihat ACTIONS)
+   ===================================================================== */
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- Ikon SVG inline ---------- */
+const P={
+ grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+ inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
+ send:'<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
+ clipboard:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+ folder:'<path d="M3 5h7l2 2h9v13H3z"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 10h18"/>',
+ archive:'<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v12h14V9m-10 4h6"/>',
+ chart:'<path d="M4 20V4m0 16h17M8 16l4-5 3 2 5-7"/>',
+ users:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m2 9v-2a6 6 0 0 0-3-5"/>',
+ book:'<path d="M3 5a3 3 0 0 1 3-3h15v18H6a3 3 0 0 0-3 3zM3 5v15a3 3 0 0 1 3-3h15"/>',
+ file:'<path d="M6 2h8l4 4v16H6zM14 2v5h4M9 12h6m-6 4h6"/>',
+ shield:'<path d="m12 2 9 4v6c0 6-4 9-9 11-5-2-9-5-9-11V6z"/><path d="m9 12 2 2 4-4"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>',
+ chevR:'<path d="m9 5 7 7-7 7"/>', chevL:'<path d="m15 5-7 7 7 7"/>', chevD:'<path d="m6 9 6 6 6-6"/>',
+ menu:'<path d="M4 6h16M4 12h16M4 18h16"/>', x:'<path d="M5 5 19 19M19 5 5 19"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M19 5l-1.5 1.5m-11 11L5 19"/>',
+ moon:'<path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10"/>',
+ bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>',
+ lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/>',
+ check:'<path d="m4 12 5 5L20 6"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.5"/>',
+ alert:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 3.5v.5"/>',
+ eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7"/><circle cx="12" cy="12" r="3"/>',
+ eyeOff:'<path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+ news:'<path d="M5 3h14v17a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V7h3zM5 17v2a1 1 0 0 1-2 0"/><path d="M9 7h6v4H9zM9 15h6m-6 3h6"/>',
+ upload:'<path d="M12 16V4m-5 5 5-5 5 5M4 20h16"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ refresh:'<path d="M20 11a8 8 0 1 0-2 6M20 4v7h-7"/>',
+ mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+ /* ditambahkan untuk halaman 7–8 */
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+ layers:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+ box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+ tool:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>',
+ copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+ /* ditambahkan untuk header bergaya produksi */
+ megaphone:'<path d="m3 11 18-5v12L3 14z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+ settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9 7 7m10 10 2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+ key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 20 3m-4 4 3 3m-5-1 2 2"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M5 21v-1a7 7 0 0 1 14 0v1"/>',
+ logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'
+};
+function ic(n,s){s=s||18;return '<svg class="ic" aria-hidden="true" focusable="false" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(P[n]||P.info)+'</svg>';}
+
+/* ---------- State ---------- */
+const S={role:'operator',state:'normal',bar:false,first:true,tabs:{dispo:'mine',sm:'daftar'},page:{}};
+const ROLES={
+ operator:{name:'Rina Pratiwi',title:'Operator Urmin',ini:'RP',email:'rina.pratiwi@contoh.test'},
+ kabag:{name:'Hendra Wijaya',title:'Kabagrenmin',ini:'HW',email:'hendra.wijaya@contoh.test'},
+ superadmin:{name:'Admin Sistem',title:'Superadmin',ini:'AS',email:'admin@contoh.test'}
+};
+const me=()=>ROLES[S.role];
+const B=(s,t)=>({s:s,t:t});
+const MONTHS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const fmtISO=v=>{const [y,m,d]=v.split('-').map(Number);return d+' '+MONTHS[m-1]+' '+y;};
+
+/* ---------- Data contoh (fiktif) ---------- */
+const UNITS={
+ urmin:{short:'Urmin',name:'Urusan Administrasi',desc:'Persuratan, disposisi, agenda rapat, dan kearsipan',icon:'inbox',tile:'Persuratan',c:'urmin'},
+ ren:{short:'Subbagren',name:'Subbagian Perencanaan',desc:'Perencanaan, program, anggaran, dan kinerja',icon:'chart',tile:'Program & anggaran',c:'ren'},
+ sumda:{short:'Subbagsumda',name:'Subbagian Sumber Daya',desc:'Administrasi personel dan logistik',icon:'users',tile:'Sumber daya',c:'sumda'},
+ binfung:{short:'Subbagbinfung',name:'Subbagian Pembinaan Fungsi',desc:'SOP, regulasi, PID, RB dan SPIP',icon:'book',tile:'Pembinaan fungsi',c:'binfung'}
+};
+const SM=[
+ {id:'sm1',ag:'SM-2026-0142',no:'B/315/XI/2026',dari:'Biro Umum Instansi Contoh',hal:'Undangan rapat koordinasi anggaran triwulan IV',tgl:'10 Nov 2026',terima:'11 Nov 2026',k:'Biasa',jenis:'Undangan',st:B('warn','Belum dibuka Kabagrenmin'),due:'14 Nov 2026'},
+ {id:'sm2',ag:'SM-2026-0141',no:'R/88/XI/2026',dari:'Pusat Data Fiktif Nasional',hal:'Permintaan data personel untuk verifikasi',tgl:'9 Nov 2026',terima:'9 Nov 2026',k:'Rahasia',jenis:'Permintaan',st:B('info','Didisposisikan'),due:'13 Nov 2026'},
+ {id:'sm3',ag:'SM-2026-0140',no:'B/1207/XI/2026',dari:'Dinas Arsip Kota Contoh',hal:'Pemberitahuan jadwal pemusnahan arsip',tgl:'7 Nov 2026',terima:'7 Nov 2026',k:'Biasa',jenis:'Pemberitahuan',st:B('info','Ditindaklanjuti'),due:'20 Nov 2026'},
+ {id:'sm4',ag:'SM-2026-0139',no:'B/402/XI/2026',dari:'Sekretariat Lembaga Karangan',hal:'Permohonan narasumber pelatihan administrasi',tgl:'6 Nov 2026',terima:'6 Nov 2026',k:'Biasa',jenis:'Permohonan',st:B('warn','Menunggu review'),due:'12 Nov 2026'},
+ {id:'sm5',ag:'SM-2026-0138',no:'R/45/XI/2026',dari:'Inspektorat Contoh',hal:'Tindak lanjut hasil pemeriksaan semester I',tgl:'5 Nov 2026',terima:'5 Nov 2026',k:'Rahasia',jenis:'Permintaan',st:B('info','Ditindaklanjuti'),due:'8 Nov 2026',late:'lewat 4 hari'},
+ {id:'sm6',ag:'SM-2026-0137',no:'B/77/XI/2026',dari:'Biro Keuangan Instansi Contoh',hal:'Penyampaian revisi DIPA',tgl:'4 Nov 2026',terima:'4 Nov 2026',k:'Biasa',jenis:'Pemberitahuan',st:B('ok','Selesai'),due:''},
+ {id:'sm7',ag:'SM-2026-0136',no:'B/990/X/2026',dari:'Koperasi Pegawai Fiktif',hal:'Undangan rapat anggota tahunan',tgl:'31 Okt 2026',terima:'3 Nov 2026',k:'Biasa',jenis:'Undangan',st:B('neutral','Tercatat'),due:''},
+ {id:'sm8',ag:'SM-2026-0135',no:'B/12/X/2026',dari:'Universitas Contoh',hal:'Permohonan izin penelitian',tgl:'29 Okt 2026',terima:'2 Nov 2026',k:'Biasa',jenis:'Permohonan',st:B('neutral','Draf'),due:''}
+];
+const SK=[
+ {id:'sk1',ag:'SK-2026-0088',no:'B/221/XI/2026',ke:'Biro Umum Instansi Contoh',hal:'Konfirmasi kehadiran rapat koordinasi',tgl:'11 Nov 2026',k:'Biasa',st:B('warn','Menunggu persetujuan'),by:'Rina Pratiwi'},
+ {id:'sk2',ag:'SK-2026-0087',no:'R/19/XI/2026',ke:'Pusat Data Fiktif Nasional',hal:'Penyampaian data personel',tgl:'10 Nov 2026',k:'Rahasia',st:B('danger','Dikembalikan'),by:'Bayu Saputra',note:'Lampiran data personel belum ditandatangani pejabat penanggung jawab. Lengkapi lalu ajukan ulang.'},
+ {id:'sk3',ag:'SK-2026-0086',no:'',ke:'Sekretariat Lembaga Karangan',hal:'Penunjukan narasumber pelatihan administrasi',tgl:'10 Nov 2026',k:'Biasa',st:B('neutral','Draf'),by:'Rina Pratiwi'},
+ {id:'sk4',ag:'SK-2026-0085',no:'B/219/XI/2026',ke:'Dinas Arsip Kota Contoh',hal:'Daftar arsip usul musnah',tgl:'6 Nov 2026',k:'Biasa',st:B('ok','Disetujui'),by:'Agus Setiawan'},
+ {id:'sk5',ag:'SK-2026-0084',no:'B/218/XI/2026',ke:'Biro Keuangan Instansi Contoh',hal:'Laporan realisasi anggaran Oktober',tgl:'3 Nov 2026',k:'Biasa',st:B('ok','Disetujui'),by:'Rina Pratiwi'},
+ {id:'sk6',ag:'SK-2026-0083',no:'R/18/X/2026',ke:'Inspektorat Contoh',hal:'Jawaban hasil pemeriksaan',tgl:'30 Okt 2026',k:'Rahasia',st:B('ok','Disetujui'),by:'Bayu Saputra'}
+];
+const DISPO={
+ mine:[
+  {sm:'sm1',no:'B/315/XI/2026',t:'Siapkan bahan rapat koordinasi anggaran',who:'Anda',from:'Hendra Wijaya (Kabagrenmin)',p:'Segera',due:'13 Nov 2026',st:B('warn','Menunggu diterima')},
+  {sm:'sm2',no:'R/88/XI/2026',t:'Verifikasi data personel yang diminta',who:'Anda',from:'Hendra Wijaya (Kabagrenmin)',p:'Kilat',due:'12 Nov 2026',st:B('info','Dalam proses')},
+  {sm:'sm5',no:'R/45/XI/2026',t:'Tindak lanjut hasil pemeriksaan',who:'Anda',from:'Hendra Wijaya (Kabagrenmin)',p:'Segera',due:'8 Nov 2026',late:'lewat 4 hari',st:B('danger','Terlambat')},
+  {sm:'sm3',no:'B/1207/XI/2026',t:'Inventarisasi arsip usul musnah',who:'Anda',from:'Hendra Wijaya (Kabagrenmin)',p:'Biasa',due:'20 Nov 2026',st:B('info','Dalam proses')},
+  {sm:'sm6',no:'B/77/XI/2026',t:'Distribusikan revisi DIPA ke Subbagren',who:'Anda',from:'Hendra Wijaya (Kabagrenmin)',p:'Biasa',due:'6 Nov 2026',st:B('ok','Selesai')}
+ ],
+ given:[
+  {sm:'sm3',no:'B/1207/XI/2026',t:'Susun daftar arsip usul musnah',who:'Agus Setiawan',from:'Anda',p:'Biasa',due:'20 Nov 2026',st:B('info','Dalam proses')},
+  {sm:'sm7',no:'B/990/X/2026',t:'Wakili rapat anggota koperasi',who:'Bayu Saputra',from:'Anda',p:'Biasa',due:'14 Nov 2026',st:B('warn','Menunggu diterima')},
+  {sm:'sm6',no:'B/77/XI/2026',t:'Salin dan arsipkan revisi DIPA',who:'Agus Setiawan',from:'Anda',p:'Biasa',due:'7 Nov 2026',st:B('ok','Selesai')}
+ ],
+ review:[
+  {sm:'sm4',no:'B/402/XI/2026',t:'Konsep jawaban permohonan narasumber',who:'Bayu Saputra',from:'Anda',p:'Segera',due:'12 Nov 2026',st:B('warn','Menunggu review')}
+ ]
+};
+const NEWS=[
+ {k:'Berita',d:'11 Nov 2026',t:'Rapat evaluasi program triwulan III BagRenmin',s:'Setiap unit memaparkan capaian, kendala, dan rencana tindak lanjut program hingga akhir tahun.'},
+ {k:'Berita',d:'7 Nov 2026',t:'Pelatihan kearsipan digital untuk staf Urmin',s:'Dua belas staf mengikuti pelatihan pemindaian dan penamaan berkas sesuai pedoman arsip.'},
+ {k:'Berita',d:'4 Nov 2026',t:'Sosialisasi SOP penerimaan surat masuk versi 2.1',s:'Perubahan utama ada pada batas waktu pencatatan dan alur disposisi ke Kabagrenmin.'},
+ {k:'Berita',d:'30 Okt 2026',t:'Ruang rapat lantai 2 kembali dapat dipakai',s:'Pemeliharaan pendingin ruangan dan proyektor telah selesai dikerjakan.'}
+];
+const ANN=[
+ {d:'10 Nov 2026',t:'Batas pengajuan usulan kebutuhan 2027 adalah 22 Nov 2026.'},
+ {d:'9 Nov 2026',t:'Pemeliharaan server aplikasi pada Sabtu, 15 Nov 2026 pukul 20.00–22.00 WIB.'}
+];
+const AGENDA=[
+ {d:'13',m:'Nov',t:'Rapat koordinasi anggaran triwulan IV',w:'09.00 WIB · Ruang rapat utama · Subbagren'},
+ {d:'17',m:'Nov',t:'Pelatihan kearsipan digital tahap 2',w:'08.30 WIB · Ruang pelatihan · Subbagsumda'},
+ {d:'20',m:'Nov',t:'Batas tindak lanjut pemusnahan arsip',w:'Sepanjang hari · Urmin'},
+ {d:'26',m:'Nov',t:'Bimbingan teknis penyusunan LKE',w:'13.00 WIB · Ruang rapat lantai 2 · Subbagbinfung'}
+];
+const SOPS=[
+ {j:'SOP',n:'SOP-URM-03',t:'Penerimaan dan pencatatan surat masuk',o:'Urmin',d:'4 Nov 2026'},
+ {j:'SOP',n:'SOP-URM-05',t:'Penyusunan dan pengajuan surat keluar',o:'Urmin',d:'12 Agu 2026'},
+ {j:'Peraturan',n:'PER-02',t:'Tata naskah dinas BagRenmin',o:'BagRenmin',d:'3 Mar 2026'},
+ {j:'SOP',n:'SOP-REN-07',t:'Penyusunan RKA-KL',o:'Subbagren',d:'18 Jan 2026'}
+];
+
+/* ---------- Komponen ---------- */
+function badge(x){return '<span class="badge st-'+x.s+'">'+esc(x.t)+'</span>';}
+function klas(k){return k==='Rahasia'?'<span class="tag">'+ic('lock',13)+'Rahasia</span>':'<span class="tag">Biasa</span>';}
+function prio(p){const c={Kilat:'st-danger',Segera:'st-warn',Biasa:'st-neutral'}[p];return '<span class="prio '+c+'">'+(p==='Kilat'?ic('clock',14):'')+esc(p)+'</span>';}
+function crumbs(items){/* items: [[label,href],...]; item terakhir = halaman ini */
+ return '<nav class="crumbs" aria-label="Jejak navigasi"><ol>'+items.map((it,i)=>{const last=i===items.length-1;
+  return '<li>'+(i?ic('chevR',14):'')+(last?'<span aria-current="page">'+esc(it[0])+'</span>':'<a href="'+it[1]+'">'+esc(it[0])+'</a>')+'</li>';}).join('')+'</ol></nav>';}
+function phead(title,desc,actions){return '<div class="phead"><div><h1 id="page-title" tabindex="-1">'+esc(title)+'</h1>'+(desc?'<p class="desc">'+desc+'</p>':'')+'</div>'+(actions?'<div class="pactions">'+actions+'</div>':'')+'</div>';}
+function panel(o){/* o: {id,title,link,sub,body,cls} */
+ return '<section class="panel '+(o.cls||'')+'" aria-labelledby="'+o.id+'"><div class="panel-h"><div class="ttl"><h2 id="'+o.id+'">'+esc(o.title)+'</h2><span class="sample">Data contoh</span></div>'+(o.link||'')+(o.sub?'<p class="sub">'+o.sub+'</p>':'')+'</div>'+o.body+'</section>';}
+/* dataBlock: satu tempat untuk empat keadaan data. Dipakai semua tabel/daftar. */
+function dataBlock(o){
+ const st=S.state;
+ if(st==='loading')return '<div class="state loading" aria-busy="true"><p>Memuat '+esc(o.noun)+'…</p>'+Array.from({length:o.rows||4},()=>'<div class="sk-row" aria-hidden="true"><span class="sk"></span><span class="sk"></span><span class="sk"></span></div>').join('')+'</div>';
+ if(st==='error')return '<div class="state error" role="alert">'+ic('alert',20)+'<div><h3>'+esc(cap(o.noun))+' tidak dapat dimuat</h3><p>Server tidak merespons. Periksa sambungan jaringan kantor, lalu pilih Coba lagi. Jika masih gagal, hubungi admin BagRenmin.</p><button type="button" class="btn btn-sm" data-action="retry" style="margin-top:8px">'+ic('refresh',16)+'Coba lagi</button></div></div>';
+ if(st==='empty')return '<div class="state"><span class="ic-wrap">'+ic(o.icon||'folder',22)+'</span><h3>'+esc(o.emptyTitle)+'</h3><p>'+esc(o.emptyText)+'</p>'+(o.emptyAction||'')+'</div>';
+ return o.normal();
+}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function tbl(id,caption,cols,rows,rowAttrs){/* cols: [{h,num}] ; rows: array of arrays; sel 0 = header baris bila rh ; rowAttrs (opsional, hal. 8): string atribut per <tr> */
+ return '<div class="tbl-wrap"><table class="tbl" id="'+id+'"><caption class="sr-only">'+esc(caption)+'</caption><thead><tr>'+cols.map(c=>'<th scope="col"'+(c.num?' class="num"':'')+'>'+esc(c.h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map((r,ri)=>'<tr'+(rowAttrs&&rowAttrs[ri]?' '+rowAttrs[ri]:'')+'>'+r.map((cell,i)=>{const tag=cols[i].rh?'th scope="row"':'td';const cls=cols[i].num?' class="num"':(cols[i].mono?' class="mono"':'');return '<'+tag+cls+'>'+cell+'</'+tag.split(' ')[0]+'>';}).join('')+'</tr>').join('')+'</tbody></table></div>';}
+function pager(key,shown,total,noun,note){
+ const pages=Math.max(1,Math.ceil(total/Math.max(shown,1)));const p=S.page[key]||1;
+ return '<div class="pager" data-pager="'+key+'" data-pages="'+pages+'"><p class="pager-info">Menampilkan '+shown+' dari '+total+' '+esc(noun)+'</p><div class="pager-ctl"><button type="button" class="btn btn-sm" data-action="page" data-dir="-1"'+(p<=1?' disabled':'')+'>Sebelumnya</button><span aria-live="polite" data-pager-label>Halaman '+p+' dari '+pages+'</span><button type="button" class="btn btn-sm" data-action="page" data-dir="1"'+(p>=pages?' disabled':'')+'>Berikutnya</button></div>'+(note?'<p class="pager-note">'+esc(note)+'</p>':'')+'</div>';}
+function tabs(group,items,label){/* ARIA tabs dengan panah kiri/kanan */
+ const sel=S.tabs[group];
+ return '<div class="seg" role="tablist" aria-label="'+esc(label)+'">'+items.map(it=>'<button type="button" role="tab" id="tab-'+group+'-'+it[0]+'" aria-controls="panel-'+group+'" aria-selected="'+(it[0]===sel)+'" tabindex="'+(it[0]===sel?0:-1)+'" data-action="tab" data-group="'+group+'" data-val="'+it[0]+'">'+esc(it[1])+'</button>').join('')+'</div>';}
+function searchBox(id,label,ph,target){return '<div class="search"><label class="sr-only" for="'+id+'">'+esc(label)+'</label>'+ic('search',16)+'<input class="input" type="search" id="'+id+'" placeholder="'+esc(ph)+'" data-filter="'+target+'" autocomplete="off"></div>';}
+function selectBox(id,label,opts){return '<div class="fgroup"><label class="flabel" for="'+id+'">'+esc(label)+'</label><select class="input" id="'+id+'">'+opts.map(o=>'<option>'+esc(o)+'</option>').join('')+'</select></div>';}
+function themeBtn(){return '<button type="button" class="icon-btn theme-btn" data-action="theme-toggle" aria-label="Tema gelap" aria-pressed="false">'+ic('moon',18)+'</button>';}
+function themeSet(name){const pref=getPref();return '<fieldset class="theme-set"><legend>Tema</legend>'+[['light','Terang'],['dark','Gelap'],['system','Ikuti sistem']].map(o=>'<label><input type="radio" name="'+name+'" value="'+o[0]+'" data-theme-pref'+(pref===o[0]?' checked':'')+'>'+o[1]+'</label>').join('')+'</fieldset>';}
+function notBuilt(title){return phead(title,'Belum dibuat di prototipe. Halaman ini dijadwalkan pada tahap berikutnya.')+'<div class="panel"><div class="state"><span class="ic-wrap">'+ic('info',22)+'</span><h3>Belum dibuat di prototipe</h3><p>Gunakan bilah prototipe di bawah untuk membuka halaman yang sudah tersedia.</p><a class="btn" href="#/portal">Buka Portal</a></div></div>';}
+
+/* ---------- Header & drawer ---------- */
+/* Item nav: [kunci, label, href, ikon]. Ikon Arahan memakai megafon, bukan lonceng (lonceng
+   notifikasi sudah dibuang dari header; produksi memakai ikon lonceng untuk Arahan). */
+function navItems(){
+ const r=S.role, it=[['portal','Portal','#/portal','grid']];
+ if(r!=='operator')it.push(['dashboard','Dashboard','#/dashboard','chart']);
+ if(r!=='superadmin'){it.push(['arahan','Arahan','#/arahan','megaphone'],['inbox','Inbox','#/inbox','inbox'],['tugas','Tugas','#/tugas','clipboard']);}
+ return it;
+}
+const KELOLA=[['pengguna','Pengguna & akses','#/kelola/pengguna','users'],['role','Role & izin','#/kelola/role','key']];
+/* Jumlah di nav — DATA CONTOH. Tugas dihitung dari disposisi contoh yang belum selesai.
+   Hanya tampil pada keadaan Normal; saat Memuat/Error jumlah belum diketahui, saat Kosong = 0. */
+const NAV_COUNT={arahan:[()=>1,'belum dibaca'],inbox:[()=>2,'belum diterima'],tugas:[()=>DISPO.mine.filter(d=>d.st.s!=='ok').length,'belum selesai']};
+function navCount(k){
+ const c=NAV_COUNT[k];if(!c||S.state!=='normal')return '';
+ const n=c[0]();if(!n)return '';
+ /* Visual "(2)" seperti produksi; pembaca layar mendengar "Inbox, 2 belum diterima". */
+ return '<span class="nav-count" aria-hidden="true">('+n+')</span><span class="sr-only">, '+n+' '+c[1]+'</span>';
+}
+function header(cur){
+ const m=me();
+ const items=navItems().map(i=>'<li><a href="'+i[2]+'"'+(cur===i[0]?' aria-current="page"':'')+'>'+ic(i[3],16)+'<span>'+i[1]+'</span>'+navCount(i[0])+'</a></li>').join('');
+ const kelola=S.role==='superadmin'?'<li><button type="button" class="nav-btn'+(cur==='kelola'?' is-current':'')+'" data-action="disc" aria-expanded="false" aria-controls="menu-kelola">'+ic('settings',16)+'<span>Kelola</span>'+(cur==='kelola'?'<span class="sr-only"> (halaman aktif)</span>':'')+ic('chevD',14)+'</button><div class="menu" id="menu-kelola" hidden>'+KELOLA.map(k=>'<a href="'+k[2]+'"'+(location.hash.indexOf(k[0])>-1?' aria-current="page"':'')+'>'+ic(k[3],16)+k[1]+'</a>').join('')+'</div></li>':'';
+ return '<header class="hdr">'+
+ '<button type="button" class="icon-btn burger" data-action="drawer-open" aria-expanded="false" aria-controls="drawer" aria-label="Buka menu navigasi">'+ic('menu',20)+'</button>'+
+ '<a class="brand" href="#/portal"><img src="logo-densus88.png" alt="" width="42" height="42"><span class="brand-words"><strong>SIERA <em>DELTA LIMA</em></strong><small>BagRenmin Densus 88 AT Polri</small></span></a>'+
+ '<nav class="hnav" aria-label="Navigasi utama"><ul>'+items+kelola+'</ul></nav>'+
+ '<div class="hactions"><span class="hsep" aria-hidden="true"></span>'+themeBtn()+
+ '<div class="acct-wrap"><button type="button" class="acct" data-action="disc" aria-expanded="false" aria-controls="menu-acct" aria-label="Menu akun '+esc(m.name)+'"><span class="avatar" aria-hidden="true">'+m.ini+'</span><span class="acct-name">'+esc(m.name)+'</span>'+ic('chevD',14)+'</button>'+
+ '<div class="menu menu-r" id="menu-acct" hidden><div class="menu-who"><strong>'+esc(m.name)+'</strong><span>'+esc(m.title)+' · '+esc(m.email)+'</span></div><a href="#/profil">'+ic('user',16)+'Profil saya</a>'+themeSet('tp-h')+'<button type="button" data-action="logout">'+ic('logout',16)+'Keluar</button></div></div>'+
+ '</div></header>';
+}
+function drawerHTML(){
+ const r=route(), m=me(), cur=r.nav;
+ const main=navItems().concat(S.role==='superadmin'?KELOLA:[]);
+ let ws='';
+ if(r.ws)ws=sideGroups(r.ws,r.menu)+'<div style="padding:8px 0"><a class="back" href="#/portal">'+ic('chevL',16)+'Kembali ke Portal</a></div>';
+ return '<div class="scrim" data-action="drawer-close"></div><div class="drawer on-navy" id="drawer" role="dialog" aria-modal="true" aria-label="Menu navigasi"><div class="drawer-h"><span class="drawer-brand"><img src="logo-densus88.png" alt="" width="32" height="32">SIERA DELTA LIMA</span><button type="button" class="icon-btn inv" data-action="drawer-close" aria-label="Tutup menu navigasi">'+ic('x',20)+'</button></div><div class="drawer-scroll">'+
+ '<nav aria-label="Navigasi utama"><p class="side-group" id="dg-main">Navigasi</p><ul class="side-list" aria-labelledby="dg-main">'+main.map(i=>'<li><a class="side-link" href="'+i[2]+'"'+((cur===i[0]||location.hash.indexOf('/'+i[0])>-1&&i[0]!=='portal')?' aria-current="page"':'')+'>'+ic(i[3],18)+i[1]+navCount(i[0])+'</a></li>').join('')+'</ul></nav>'+ws+
+ '<div class="drawer-who"><strong>'+esc(m.name)+'</strong><span>'+esc(m.title)+' · '+esc(m.email)+'</span><ul class="side-list" style="margin-top:8px"><li><a class="side-link" href="#/profil">'+ic('user',18)+'Profil saya</a></li></ul>'+themeSet('tp-d')+'<button type="button" class="back" style="width:100%;background:none" data-action="logout">'+ic('logout',16)+'Keluar</button></div></div></div>';
+}
+
+/* ---------- Sidebar workspace ---------- */
+const URMIN_MENU=[['dashboard','Dashboard','grid','#/urmin'],['surat-masuk','Surat masuk','inbox','#/urmin/surat-masuk'],['surat-keluar','Surat keluar','send','#/urmin/surat-keluar'],['disposisi','Disposisi','clipboard','#/urmin/disposisi'],['berkas','Berkas kerja','folder','#/urmin/berkas'],['agenda','Agenda & rapat','calendar','#/urmin/agenda'],['arsip','Arsip','archive','#/urmin/arsip']];
+function sideGroups(uid,menu){
+ const u=UNITS[uid];
+ const list=uid==='urmin'?URMIN_MENU:[['dashboard','Dashboard','grid','#/unit/'+uid]];
+ return '<nav aria-label="Menu '+u.short+'"><p class="side-group" id="sg-'+uid+'">Menu utama</p><ul class="side-list" aria-labelledby="sg-'+uid+'">'+list.map(i=>'<li><a class="side-link" href="'+i[3]+'"'+(i[0]===menu?' aria-current="page"':'')+'>'+ic(i[2],18)+i[1]+'</a></li>').join('')+'</ul></nav>';
+}
+function workspace(uid,menu,inner){
+ const u=UNITS[uid];
+ return '<div class="work"><div class="side on-navy"><div class="side-unit"><span class="unit-chip" style="--uc:var(--un-'+u.c+')">'+ic(u.icon,14)+u.short+'</span><strong>'+u.name+'</strong><p>'+u.desc+'</p></div><div class="side-scroll">'+sideGroups(uid,menu)+'</div><div class="side-foot"><a class="back" href="#/portal">'+ic('chevL',16)+'Kembali ke Portal</a></div></div><main id="main" tabindex="-1" class="work-main"><div class="content">'+inner+'</div></main></div>';
+}
+/* Catatan: chip unit di sidebar memakai --un-* (versi terang untuk latar navy). */
+
+/* =====================================================================
+   HALAMAN 1 — LOGIN
+   Keadaan: normal = formulir · loading = menunggu verifikasi perangkat ·
+            error = gagal masuk · empty = langkah kode OTP
+   ===================================================================== */
+/* Foto latar login: letakkan foto resmi (tanpa wajah terlihat) di foto-login/1.jpg, 2.jpg, 3.jpg.
+   Foto yang tidak ada dilewati; bila tidak ada satu pun, latar kembali ke navy polos. */
+const LOGIN_PHOTOS=['foto-login/1.jpg','foto-login/2.jpg','foto-login/3.jpg'];
+let loginPhotosOk=null, loginSlideTimer=null, loginSlideIdx=0;
+function probeLoginPhotos(){
+ if(loginPhotosOk)return;loginPhotosOk=[];
+ LOGIN_PHOTOS.forEach(src=>{const im=new Image();im.onload=()=>{loginPhotosOk.push(src);if((location.hash||'#/login').indexOf('#/login')===0)paintLoginBg();};im.src=src;});
+}
+function paintLoginBg(){
+ const bg=$('#auth-bg');if(!bg||!loginPhotosOk||!loginPhotosOk.length)return;
+ loginPhotosOk.sort((x,y)=>LOGIN_PHOTOS.indexOf(x)-LOGIN_PHOTOS.indexOf(y));
+ // Halaman dirender ulang saat mengetik: lanjutkan dari foto yang sedang tampil, tanpa animasi ulang.
+ if(loginSlideIdx>=loginPhotosOk.length)loginSlideIdx=0;
+ bg.innerHTML=loginPhotosOk.map((s,i)=>'<div class="auth-ph'+(i===loginSlideIdx?' on':'')+'" style="background-image:url('+JSON.stringify(s).replace(/"/g,'&quot;')+')"></div>').join('');
+ bg.parentElement.classList.add('has-photo');
+ if(loginSlideTimer||loginPhotosOk.length<2||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ loginSlideTimer=setInterval(()=>{
+  const L=$$('.auth-ph');if(!L.length){clearInterval(loginSlideTimer);loginSlideTimer=null;return;}
+  if(L[loginSlideIdx])L[loginSlideIdx].classList.remove('on');
+  loginSlideIdx=(loginSlideIdx+1)%L.length;L[loginSlideIdx].classList.add('on');
+ },6000);
+}
+function viewLogin(){
+ const st=S.state, otp=st==='empty'||S.loginStep==='otp';
+ setTimeout(()=>{probeLoginPhotos();paintLoginBg();},0);
+ return '<div class="auth"><div class="auth-bg" id="auth-bg" aria-hidden="true"></div><div class="auth-top">'+themeBtn()+'</div>'+
+ '<main id="main" tabindex="-1" class="auth-center">'+
+ '<div class="auth-mark"><img src="logo-densus88.png" alt="Lambang Densus 88 AT Polri" width="72" height="72"><p class="auth-name">SIERA DELTA LIMA</p><p class="auth-org">BagRenmin Densus 88 AT Polri</p></div>'+
+ '<section class="auth-card" aria-labelledby="page-title">'+(otp?otpForm():loginForm(st))+'</section></main>'+
+ // Versi dibaca dari build saat porting (apps/frontend/package.json), bukan ditulis tangan.
+ '<footer class="auth-foot"><span>SIERA DELTA LIMA v0.1.0 · '+new Date().getFullYear()+'</span></footer></div>';
+}
+function loginForm(st){
+ const wait=st==='loading';
+ return '<h1 id="page-title" tabindex="-1">Masuk ke ruang kerja</h1><p class="lead">Gunakan akun personel BagRenmin Anda.</p>'+
+ (st==='error'?'<div class="alert" role="alert">'+ic('alert',20)+'<div><strong>Username atau password tidak sesuai.</strong><p>Periksa ejaan dan tombol Caps Lock, lalu coba lagi. Lupa password? Minta administrator BagRenmin mengatur ulang.</p></div></div>':'')+
+ '<form id="login-form" novalidate>'+
+ '<div class="field"><label for="f-user">Username atau email</label><input class="input" id="f-user" autocomplete="username" spellcheck="false"'+(st==='error'?' value="rina.pratiwi"':'')+'><p class="err" id="f-user-err" hidden></p></div>'+
+ '<div class="field"><label for="f-pass">Password</label><div class="pw"><input class="input" id="f-pass" type="password" autocomplete="current-password" placeholder="Masukkan password"><button type="button" class="pw-btn" data-action="pw-toggle" aria-controls="f-pass" aria-pressed="false" aria-label="Tampilkan password">'+ic('eye',18)+'</button></div><p class="err" id="f-pass-err" hidden></p></div>'+
+ '<p class="device '+(wait?'is-wait':'is-ok')+'" id="device-status" role="status">'+(wait?ic('clock',16)+'<span>Memverifikasi perangkat… Tombol Masuk aktif setelah selesai, biasanya beberapa detik.</span>':ic('check',16)+'<span>Perangkat terverifikasi.</span>')+'</p>'+
+ '<button class="btn btn-primary btn-block" type="submit"'+(wait?' disabled aria-describedby="device-status"':'')+'>'+ic('lock',16)+'Masuk</button></form>'+
+ '<p class="auth-help">Belum punya akun atau akun terkunci? Hubungi administrator BagRenmin.</p>';
+}
+function otpForm(){
+ return '<h1 id="page-title" tabindex="-1">Masukkan kode verifikasi</h1><p class="lead">Kode 6 digit sudah dikirim ke r•••••@contoh.test. Kode berlaku 5 menit.</p>'+
+ '<form id="otp-form" novalidate><div class="field"><label for="f-otp">Kode verifikasi</label><input class="input otp" id="f-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" aria-describedby="f-otp-hint"><p class="hint" id="f-otp-hint">Sisa percobaan: 5 dari 5.</p><p class="err" id="f-otp-err" hidden></p></div>'+
+ '<button class="btn btn-primary btn-block" type="submit" style="margin-top:16px">'+ic('mail',16)+'Verifikasi dan masuk</button></form>'+
+ '<button type="button" class="link-btn" data-action="otp-back">'+ic('chevL',16)+'Ganti akun</button>';
+}
+
+/* =====================================================================
+   HALAMAN 2 — PORTAL (Beranda + tab sederhana)
+   ===================================================================== */
+function viewPortal(tab){
+ const T=[['beranda','Beranda','#/portal'],['berita','Berita & pengumuman','#/portal/berita'],['kalender','Kalender','#/portal/kalender'],['sop','SOP & peraturan','#/portal/sop']];
+ const body=tab==='berita'?portalNews():tab==='kalender'?portalCal():tab==='sop'?portalSop():portalHome();
+ return '<div class="portal-head"><div class="ph-row"><div><h1 id="page-title" tabindex="-1">Portal BagRenmin</h1><p>Informasi terhubung. Kegiatan lebih terarah.</p></div></div></div>'+
+ '<nav class="ptabs" aria-label="Bagian Portal"><ul>'+T.map(t=>'<li><a href="'+t[2]+'"'+(t[0]===tab?' aria-current="page"':'')+'>'+t[1]+'</a></li>').join('')+'</ul></nav>'+body;
+}
+function portalHome(){
+ const sa=S.role==='superadmin';
+ const tiles=[['urmin','#/urmin'],['ren','#/unit/ren'],['sumda','#/unit/sumda'],['binfung','#/unit/binfung']].map(x=>{const u=UNITS[x[0]];return tile(u.short,u.tile,u.icon,u.c,x[1],sa);})
+  .concat([tile('SPIP','Data dukung','shield','spip','#/unit/binfung',sa),tile('Kalender','Agenda bersama','calendar','binfung','#/portal/kalender',false)]);
+ const newsRows=()=>'<ul class="rows">'+NEWS.map((n,i)=>'<li><button type="button" class="news-row" data-action="news" data-i="'+i+'"><span class="ph">'+ic('news',22)+'</span><span class="news-txt"><span class="kat">'+n.k+' · '+n.d+'</span><span class="news-title">'+esc(n.t)+'</span><span class="news-sum">'+esc(n.s)+'</span></span></button></li>').join('')+'</ul>';
+ return '<section aria-labelledby="h-launch"><h2 id="h-launch" class="sec-title">Unit dan layanan</h2><ul class="launch">'+tiles.join('')+'</ul>'+
+ (sa?'<p class="note" id="tile-note">'+ic('info',16)+'<span>Akun Superadmin mengelola pengguna dan akses, sehingga tidak membuka ruang kerja unit. Kalender tetap bisa dibuka.</span></p>':'')+'</section>'+
+ '<div class="home-grid">'+
+ panel({id:'h-news',title:'Berita terbaru',link:'<a class="tlink" href="#/portal/berita">Lihat semua berita</a>',body:'<div class="compact">'+dataBlock({noun:'berita',normal:newsRows,icon:'news',emptyTitle:'Belum ada berita',emptyText:'Berita yang dipublikasikan Subbagbinfung akan tampil di sini.'})+'</div>'})+
+ '<div class="stack">'+
+ panel({id:'h-agenda',title:'Agenda mendatang',link:'<a class="tlink" href="#/portal/kalender">Lihat kalender</a>',body:'<div class="compact">'+dataBlock({noun:'agenda',normal:()=>agendaRows(AGENDA.slice(0,3)),icon:'calendar',emptyTitle:'Belum ada agenda mendatang',emptyText:'Agenda bersama yang dipublikasikan akan tampil di sini.'})+'</div>'})+
+ panel({id:'h-ann',title:'Pengumuman',body:'<div class="compact">'+dataBlock({noun:'pengumuman',rows:2,normal:()=>'<ul class="rows">'+ANN.map(a=>'<li class="simple-row">'+ic('bell',16)+'<div><p>'+esc(a.t)+'</p><p class="ag-m">'+a.d+'</p></div></li>').join('')+'</ul>',icon:'bell',emptyTitle:'Belum ada pengumuman',emptyText:'Pengumuman yang dipublikasikan akan tampil di sini.'})+'</div>'})+
+ '</div></div>'+
+ '<div style="margin-top:16px">'+panel({id:'h-sop',title:'SOP & peraturan',link:'<a class="tlink" href="#/portal/sop">Lihat semua SOP</a>',body:'<div class="compact">'+dataBlock({noun:'SOP dan peraturan',normal:()=>'<ul class="rows">'+SOPS.slice(0,3).map(s=>'<li class="simple-row">'+ic('book',16)+'<div><span class="kat">'+s.j+' · '+s.n+'</span><p style="font-weight:600">'+esc(s.t)+'</p></div></li>').join('')+'</ul>',icon:'book',emptyTitle:'Belum ada SOP atau peraturan',emptyText:'Dokumen yang dipublikasikan akan tampil di sini.'})+'</div>'})+'</div>';
+}
+function tile(name,desc,icon,c,href,off){
+ const style=' style="--u:var(--u-'+c+');--us:var(--us-'+c+')"';
+ const inner='<span class="tile-ic">'+ic(icon,22)+'</span><span class="tile-name">'+esc(name)+'</span><span class="tile-desc">'+esc(off?'Tidak tersedia':desc)+'</span>';
+ return '<li>'+(off?'<span class="tile is-off" aria-disabled="true"'+style+'>'+inner+'</span>':'<a class="tile" href="'+href+'"'+style+'>'+inner+'</a>')+'</li>';
+}
+function agendaRows(list){return '<ul class="rows">'+list.map(a=>'<li class="ag-row"><span class="ag-date"><strong>'+a.d+'</strong><span>'+a.m+'</span></span><div><p class="ag-t">'+esc(a.t)+'</p><p class="ag-m">'+esc(a.w)+'</p></div></li>').join('')+'</ul>';}
+function portalNews(){
+ const all=NEWS.map((n,i)=>({k:n.k,d:n.d,t:n.t,s:n.s,i:i})).concat(ANN.map(a=>({k:'Pengumuman',d:a.d,t:a.t,s:''})));
+ return panel({id:'h-allnews',title:'Berita & pengumuman',body:'<div class="toolbar">'+searchBox('q-news','Cari berita dan pengumuman','Cari judul atau ringkasan','list-news')+selectBox('f-kind','Jenis',['Semua','Berita','Pengumuman'])+'</div>'+
+ dataBlock({noun:'berita dan pengumuman',normal:()=>'<ul class="rows" id="list-news">'+all.map(n=>'<li>'+(n.i!==undefined?'<button type="button" class="news-row" data-action="news" data-i="'+n.i+'">':'<div class="news-row">')+'<span class="ph">'+ic(n.k==='Berita'?'news':'bell',22)+'</span><span class="news-txt"><span class="kat">'+n.k+' · '+n.d+'</span><span class="news-title">'+esc(n.t)+'</span>'+(n.s?'<span class="news-sum">'+esc(n.s)+'</span>':'')+'</span>'+(n.i!==undefined?'</button>':'</div>')+'</li>').join('')+'</ul>',icon:'news',emptyTitle:'Belum ada publikasi',emptyText:'Berita dan pengumuman yang dipublikasikan akan tampil di sini.'})});
+}
+function portalCal(){return panel({id:'h-cal',title:'November 2026',sub:'Agenda bersama yang sudah dipublikasikan. Agenda internal unit tidak tampil di sini.',body:dataBlock({noun:'agenda',normal:()=>agendaRows(AGENDA),icon:'calendar',emptyTitle:'Belum ada agenda bulan ini',emptyText:'Agenda bersama yang dipublikasikan akan tampil di sini.'})});}
+function portalSop(){return panel({id:'h-sops',title:'SOP & peraturan',body:'<div class="toolbar">'+searchBox('q-sop','Cari SOP dan peraturan','Cari nomor atau judul','t-sop')+'</div>'+dataBlock({noun:'SOP dan peraturan',normal:()=>tbl('t-sop','Daftar SOP dan peraturan',[{h:'Nomor',mono:1},{h:'Judul',rh:1},{h:'Jenis'},{h:'Pemilik proses'},{h:'Berlaku sejak'}],SOPS.map(s=>[s.n,esc(s.t),s.j,s.o,s.d])),icon:'book',emptyTitle:'Belum ada dokumen',emptyText:'SOP dan peraturan yang dipublikasikan akan tampil di sini.'})});}
+
+/* =====================================================================
+   HALAMAN 3 — DASHBOARD URMIN
+   ===================================================================== */
+function viewUrminDash(){
+ const jobs=[
+  {t:'R/45/XI/2026 · Tindak lanjut hasil pemeriksaan',m:'Disposisi dari Hendra Wijaya · tenggat 8 Nov 2026 (lewat 4 hari)',st:B('danger','Terlambat'),h:'#/urmin/surat-masuk/sm5'},
+  {t:'B/315/XI/2026 · Siapkan bahan rapat koordinasi anggaran',m:'Disposisi baru dari Hendra Wijaya · tenggat 13 Nov 2026',st:B('warn','Menunggu diterima'),h:'#/urmin/surat-masuk/sm1'},
+  {t:'B/402/XI/2026 · Konsep jawaban permohonan narasumber',m:'Bayu Saputra melaporkan selesai · perlu review Anda',st:B('warn','Menunggu review'),h:'#/urmin/surat-masuk/sm4'},
+  {t:'R/19/XI/2026 · Penyampaian data personel',m:'Surat keluar dikembalikan Kabagrenmin dengan catatan',st:B('danger','Dikembalikan'),h:'#/urmin/surat-keluar/sk2'},
+  {t:'R/88/XI/2026 · Verifikasi data personel',m:'Disposisi kilat · tenggat hari ini, 12 Nov 2026',st:B('info','Dalam proses'),h:'#/urmin/surat-masuk/sm2'}
+ ];
+ const counts=[[B('warn','Menunggu diterima'),2],[B('info','Dalam proses'),2],[B('danger','Terlambat'),1],[B('warn','Menunggu review saya'),1]];
+ const recent=[['Surat masuk SM-2026-0142 dicatat','11 Nov 2026, 09.12 WIB'],['Surat keluar SK-2026-0088 diajukan','11 Nov 2026, 08.40 WIB'],['Disposisi R/88/XI/2026 diterima','10 Nov 2026, 15.05 WIB'],['Surat keluar SK-2026-0087 dikembalikan','10 Nov 2026, 14.22 WIB']];
+ const statsN=()=>'<dl class="stats"><div><dt><a href="#/urmin/surat-masuk">Surat masuk</a></dt><dd>42</dd><span class="hint">30 hari terakhir</span></div><div><dt><a href="#/urmin/surat-keluar">Surat keluar</a></dt><dd>18</dd><span class="hint">30 hari terakhir</span></div><div><dt><a href="#/urmin/disposisi">Perlu tindakan</a></dt><dd>6</dd><span class="hint">Inbox, disposisi, dan review</span></div><div><dt><a href="#/urmin/disposisi">Disposisi terlambat</a></dt><dd class="late">1</dd><span class="hint">Tenggat sudah lewat</span></div></dl>';
+ return crumbs([['Portal','#/portal'],['Urmin','#/urmin'],['Dashboard']])+
+ phead('Dashboard Urmin','Ringkasan persuratan dan disposisi yang dapat Anda akses.','<a class="btn" href="#/urmin/surat-keluar">'+ic('send',16)+'Buat surat keluar</a><a class="btn btn-primary" href="#/urmin/surat-masuk">'+ic('plus',16)+'Catat surat masuk</a>')+
+ '<div class="toolrow">'+selectBox('f-period','Periode',['30 hari terakhir','90 hari terakhir','12 bulan terakhir','Semua waktu'])+'<button type="button" class="btn" data-action="retry">'+ic('refresh',16)+'Perbarui</button><span class="sample">Data contoh</span></div>'+
+ (S.state==='normal'?statsN():'')+
+ '<div class="dash-grid">'+
+ panel({id:'h-jobs',title:'Perlu ditindaklanjuti',sub:'Diurutkan dari yang paling mendesak.',body:'<div class="compact">'+dataBlock({noun:'daftar tindakan',normal:()=>'<ul class="rows">'+jobs.map(j=>'<li class="job"><a class="row-link" href="'+j.h+'">'+esc(j.t)+'</a>'+badge(j.st)+'<span class="meta">'+esc(j.m)+'</span></li>').join('')+'</ul>',icon:'check',emptyTitle:'Tidak ada yang perlu ditindaklanjuti',emptyText:'Disposisi, review, dan surat yang dikembalikan akan muncul di sini.',emptyAction:'<a class="btn" href="#/urmin/surat-masuk">Buka surat masuk</a>'})+'</div>'})+
+ panel({id:'h-mystat',title:'Status disposisi saya',link:'<a class="tlink" href="#/urmin/disposisi">Buka disposisi</a>',body:'<div class="compact">'+dataBlock({noun:'status disposisi',normal:()=>'<ul class="rows">'+counts.map(c=>'<li><a class="count-row" href="#/urmin/disposisi">'+badge(c[0])+'<strong>'+c[1]+'</strong></a></li>').join('')+'</ul>',icon:'clipboard',emptyTitle:'Belum ada disposisi',emptyText:'Disposisi yang ditujukan kepada Anda akan dihitung di sini.'})+'</div>'})+
+ '</div><div class="dash-grid">'+
+ panel({id:'h-agw',title:'Agenda minggu ini',body:'<div class="compact">'+dataBlock({noun:'agenda',normal:()=>agendaRows(AGENDA.slice(0,2)),icon:'calendar',emptyTitle:'Tidak ada agenda minggu ini',emptyText:'Agenda dari surat undangan akan tampil di sini.'})+'</div>'})+
+ panel({id:'h-recent',title:'Aktivitas terbaru',body:'<div class="compact">'+dataBlock({noun:'aktivitas',normal:()=>'<ul class="rows">'+recent.map(r=>'<li class="simple-row"><div><p>'+esc(r[0])+'</p><p class="ag-m">'+r[1]+'</p></div></li>').join('')+'</ul>',icon:'clock',emptyTitle:'Belum ada aktivitas',emptyText:'Aktivitas persuratan pada periode ini akan tampil di sini.'})+'</div>'})+
+ '</div>';
+}
+
+/* =====================================================================
+   HALAMAN 4 — SURAT MASUK (daftar + detail)
+   ===================================================================== */
+function viewSuratMasuk(){
+ const tab=S.tabs.sm;
+ const list=()=>tbl('t-sm','Daftar surat masuk',[{h:'Agenda',mono:1},{h:'Nomor surat dan perihal',rh:1},{h:'Asal surat'},{h:'Tanggal surat'},{h:'Klasifikasi'},{h:'Status'},{h:'Batas respons'}],
+  SM.map(s=>[s.ag,'<a class="row-link" href="#/urmin/surat-masuk/'+s.id+'">'+s.no+'</a><span class="sub">'+esc(s.hal)+'</span>',esc(s.dari),'<span class="mono">'+s.tgl+'</span>',klas(s.k),badge(s.st),s.due?(s.late?'<span class="late">'+s.due+'</span><span class="sub late">'+s.late+'</span>':'<span class="mono">'+s.due+'</span>'):'<span class="muted">Tanpa batas</span>']))+pager('sm',SM.length,42,'surat');
+ const hist=()=>tbl('t-smh','Riwayat penerimaan',[{h:'Waktu'},{h:'Surat',rh:1},{h:'Dicatat oleh'},{h:'Kegiatan'}],
+  [['11 Nov 2026, 09.12 WIB','B/315/XI/2026','Rina Pratiwi','Surat dicatat dan diajukan ke Kabagrenmin'],['9 Nov 2026, 10.40 WIB','R/88/XI/2026','Bayu Saputra','Surat dicatat dan diajukan ke Kabagrenmin'],['7 Nov 2026, 13.05 WIB','B/1207/XI/2026','Rina Pratiwi','Lampiran diunggah (2 berkas)']]);
+ return crumbs([['Portal','#/portal'],['Urmin','#/urmin'],['Surat masuk']])+
+ phead('Surat masuk','Register naskah dinas yang diterima dan status tindak lanjutnya.',S.role!=='kabag'?'<button type="button" class="btn btn-primary" data-action="noop">'+ic('plus',16)+'Catat surat masuk</button>':'')+
+ tabs('sm',[['daftar','Daftar surat'],['riwayat','Riwayat penerimaan']],'Tampilan surat masuk')+
+ '<div role="tabpanel" id="panel-sm" aria-labelledby="tab-sm-'+tab+'">'+
+ panel({id:'h-sm',title:tab==='daftar'?'Daftar surat masuk':'Riwayat penerimaan',body:(tab==='daftar'?'<div class="toolbar">'+searchBox('q-sm','Cari surat masuk','Cari nomor, asal, atau perihal','t-sm')+selectBox('f-sm-st','Status',['Semua status','Draf','Tercatat','Belum dibuka Kabagrenmin','Didisposisikan','Ditindaklanjuti','Menunggu review','Selesai'])+selectBox('f-sm-k','Klasifikasi',['Semua','Biasa','Rahasia'])+'</div>':'')+
+  dataBlock({noun:'daftar surat masuk',rows:5,normal:tab==='daftar'?list:hist,icon:'inbox',emptyTitle:'Belum ada surat masuk',emptyText:'Surat yang dicatat petugas Urmin akan muncul di sini, lengkap dengan status disposisinya.',emptyAction:S.role!=='kabag'?'<button type="button" class="btn btn-primary" data-action="noop">'+ic('plus',16)+'Catat surat masuk</button>':''})})+'</div>';
+}
+function viewSuratMasukDetail(id){
+ const s=SM.find(x=>x.id===id)||SM[0];
+ const dispo=DISPO.mine.concat(DISPO.given,DISPO.review).filter(d=>d.sm===s.id);
+ const draft=s.st.t==='Draf';
+ return crumbs([['Portal','#/portal'],['Urmin','#/urmin'],['Surat masuk','#/urmin/surat-masuk'],[s.no]])+
+ '<a class="back-link" href="#/urmin/surat-masuk">'+ic('chevL',16)+'Kembali ke daftar surat masuk</a>'+
+ phead(s.no,esc(s.hal),'<button type="button" class="btn" data-action="noop">'+ic('upload',16)+'Unggah lampiran</button>'+(draft?'<button type="button" class="btn btn-primary" data-action="noop">Edit draf</button>':'<span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><button type="button" class="btn" disabled aria-describedby="why-edit">Edit draf</button><span class="why" id="why-edit">Hanya surat berstatus Draf yang bisa diedit.</span></span>'))+
+ (S.state!=='normal'?'<div class="panel">'+dataBlock({noun:'detail surat',emptyTitle:'Surat tidak ditemukan',emptyText:'Surat ini mungkin sudah dihapus atau di luar kewenangan akun Anda.',emptyAction:'<a class="btn" href="#/urmin/surat-masuk">Kembali ke daftar</a>'})+'</div>':
+ '<div class="detail-grid"><div class="stack">'+
+ panel({id:'h-info',title:'Informasi surat',body:'<div class="panel-b"><dl class="dl"><div><dt>Nomor agenda</dt><dd class="mono">'+s.ag+'</dd></div><div><dt>Status</dt><dd>'+badge(s.st)+'</dd></div><div><dt>Asal surat</dt><dd>'+esc(s.dari)+'</dd></div><div><dt>Jenis surat</dt><dd>'+s.jenis+'</dd></div><div><dt>Tanggal surat</dt><dd>'+s.tgl+'</dd></div><div><dt>Tanggal diterima</dt><dd>'+s.terima+'</dd></div><div><dt>Klasifikasi</dt><dd>'+klas(s.k)+'</dd></div><div><dt>Batas respons</dt><dd>'+(s.due?(s.late?'<span class="late">'+s.due+' ('+s.late+')</span>':s.due):'Tanpa batas respons')+'</dd></div><div class="span"><dt>Perihal</dt><dd>'+esc(s.hal)+'</dd></div></dl></div>'})+
+ panel({id:'h-dispo',title:'Disposisi',body:dispo.length?'<ul class="rows">'+dispo.map(d=>'<li class="job"><span style="font-weight:600">'+esc(d.t)+'</span>'+badge(d.st)+'<span class="meta">Untuk '+esc(d.who)+' · dari '+esc(d.from)+' · '+d.p+' · tenggat '+d.due+'</span></li>').join('')+'</ul>':'<div class="state"><h3>Belum ada disposisi</h3><p>Disposisi akan muncul setelah Kabagrenmin membuka dan mendisposisikan surat ini.</p></div>'})+
+ '</div><div class="stack">'+
+ panel({id:'h-files',title:'Lampiran',body:'<ul class="rows"><li class="file-row"><span>'+ic('file',16)+'</span><span style="flex:1;min-width:0">Surat '+esc(s.jenis.toLowerCase())+'.pdf<span class="sub muted" style="display:block;font-size:13px">284 KB · diunggah '+s.terima+'</span></span><button type="button" class="btn btn-sm" data-action="noop">Pratinjau</button></li></ul>'})+
+ panel({id:'h-hist',title:'Riwayat surat',body:'<div class="panel-b"><ol class="timeline"><li>Surat dicatat<small>Rina Pratiwi · '+s.terima+', 09.12 WIB</small></li><li>Diajukan ke Kabagrenmin<small>Rina Pratiwi · '+s.terima+', 09.15 WIB</small></li>'+(s.st.t!=='Belum dibuka Kabagrenmin'&&!draft?'<li>Didisposisikan<small>Hendra Wijaya · '+s.terima+', 13.40 WIB</small></li>':'')+'</ol></div>'})+
+ '</div></div>');
+}
+
+/* =====================================================================
+   HALAMAN 5 — SURAT KELUAR (daftar; detail ringkas)
+   ===================================================================== */
+function viewSuratKeluar(){
+ const list=()=>tbl('t-sk','Daftar surat keluar',[{h:'Agenda',mono:1},{h:'Nomor surat dan perihal',rh:1},{h:'Tujuan'},{h:'Tanggal'},{h:'Klasifikasi'},{h:'Status'},{h:'Penyusun'}],
+  SK.map(s=>[s.ag,'<a class="row-link" href="#/urmin/surat-keluar/'+s.id+'">'+(s.no||'Belum bernomor')+'</a><span class="sub">'+esc(s.hal)+'</span>',esc(s.ke),'<span class="mono">'+s.tgl+'</span>',klas(s.k),badge(s.st),esc(s.by)]))+pager('sk',SK.length,18,'surat');
+ return crumbs([['Portal','#/portal'],['Urmin','#/urmin'],['Surat keluar']])+
+ phead('Surat keluar','Draf, persetujuan Kabagrenmin, dan pengiriman surat. Surat yang disetujui lebih dari 7 hari pindah ke Arsip.',S.role!=='kabag'?'<button type="button" class="btn btn-primary" data-action="noop">'+ic('plus',16)+'Buat surat keluar</button>':'')+
+ panel({id:'h-sk',title:'Daftar surat keluar',body:'<div class="toolbar">'+searchBox('q-sk','Cari surat keluar','Cari nomor, tujuan, atau perihal','t-sk')+selectBox('f-sk-st','Status',['Semua status','Draf','Menunggu persetujuan','Dikembalikan','Disetujui'])+selectBox('f-sk-k','Klasifikasi',['Semua','Biasa','Rahasia'])+'</div>'+
+  dataBlock({noun:'daftar surat keluar',rows:5,normal:list,icon:'send',emptyTitle:'Belum ada surat keluar',emptyText:'Draf yang Anda buat dan surat yang menunggu persetujuan akan muncul di sini.',emptyAction:S.role!=='kabag'?'<button type="button" class="btn btn-primary" data-action="noop">'+ic('plus',16)+'Buat surat keluar</button>':''})});
+}
+function viewSuratKeluarDetail(id){
+ const s=SK.find(x=>x.id===id)||SK[0];
+ const act=s.st.t==='Draf'?'<button type="button" class="btn btn-primary" data-action="noop">Ajukan ke Kabagrenmin</button>':s.st.t==='Dikembalikan'?'<button type="button" class="btn btn-primary" data-action="noop">Perbaiki draf</button>':'';
+ return crumbs([['Portal','#/portal'],['Urmin','#/urmin'],['Surat keluar','#/urmin/surat-keluar'],[s.no||s.ag]])+
+ '<a class="back-link" href="#/urmin/surat-keluar">'+ic('chevL',16)+'Kembali ke daftar surat keluar</a>'+
+ phead(s.no||'Draf '+s.ag,esc(s.hal),act)+
+ (s.note?'<div class="alert" role="note" style="margin:0 0 16px">'+ic('alert',20)+'<div><strong>Catatan pengembalian dari Kabagrenmin</strong><p>'+esc(s.note)+'</p></div></div>':'')+
+ (S.state!=='normal'?'<div class="panel">'+dataBlock({noun:'detail surat',emptyTitle:'Surat tidak ditemukan',emptyText:'Surat ini mungkin sudah dihapus atau di luar kewenangan akun Anda.',emptyAction:'<a class="btn" href="#/urmin/surat-keluar">Kembali ke daftar</a>'})+'</div>':
+ panel({id:'h-skinfo',title:'Informasi surat',body:'<div class="panel-b"><dl class="dl"><div><dt>Nomor agenda</dt><dd class="mono">'+s.ag+'</dd></div><div><dt>Status</dt><dd>'+badge(s.st)+'</dd></div><div><dt>Tujuan</dt><dd>'+esc(s.ke)+'</dd></div><div><dt>Tanggal</dt><dd>'+s.tgl+'</dd></div><div><dt>Klasifikasi</dt><dd>'+klas(s.k)+'</dd></div><div><dt>Penyusun</dt><dd>'+esc(s.by)+'</dd></div><div class="span"><dt>Perihal</dt><dd>'+esc(s.hal)+'</dd></div></dl></div>'}));
+}
+
+/* =====================================================================
+   HALAMAN 6 — DISPOSISI (Tugas saya / Diberikan / Perlu review)
+   ===================================================================== */
+function viewDisposisi(inWs){
+ const tab=S.tabs.dispo, rows=DISPO[tab];
+ const sub={mine:'Disposisi yang ditugaskan kepada Anda.',given:'Disposisi yang Anda teruskan ke staf.',review:'Pekerjaan yang dilaporkan selesai dan menunggu keputusan Anda.'}[tab];
+ const list=()=>tbl('t-dispo','Daftar disposisi',[{h:'Surat dan perihal',rh:1},{h:'Penugasan'},{h:'Prioritas'},{h:'Tenggat'},{h:'Status'}],
+  rows.map(d=>['<a class="row-link" href="#/urmin/surat-masuk/'+d.sm+'">'+d.no+'</a><span class="sub">'+esc(d.t)+'</span>','<strong style="font-weight:600">'+esc(d.who)+'</strong><span class="sub">Dari '+esc(d.from)+'</span>',prio(d.p),d.late?'<span class="late">'+d.due+'</span><span class="sub late">'+d.late+'</span>':'<span class="mono">'+d.due+'</span>',badge(d.st)]))+pager('dispo-'+tab,rows.length,rows.length,'disposisi');
+ return (inWs?crumbs([['Portal','#/portal'],['Urmin','#/urmin'],['Disposisi']]):crumbs([['Portal','#/portal'],['Tugas']]))+
+ phead(inWs?'Disposisi':'Tugas disposisi','Arahan pimpinan dan pemantauan tindak lanjutnya.','<button type="button" class="btn" data-action="retry">'+ic('refresh',16)+'Perbarui</button>')+
+ tabs('dispo',[['mine','Tugas saya ('+DISPO.mine.length+')'],['given','Diberikan ('+DISPO.given.length+')'],['review','Perlu review ('+DISPO.review.length+')']],'Kelompok disposisi')+
+ '<div role="tabpanel" id="panel-dispo" aria-labelledby="tab-dispo-'+tab+'">'+
+ panel({id:'h-dispo-l',title:{mine:'Tugas saya',given:'Diberikan',review:'Perlu review'}[tab],sub:sub,body:
+  '<div class="toolbar">'+searchBox('q-dispo','Cari disposisi','Cari nomor surat, perihal, atau petugas','t-dispo')+
+  (tab!=='review'?selectBox('f-d-st','Status',['Semua status','Menunggu diterima','Dalam proses','Terlambat','Menunggu review','Selesai']):'')+
+  selectBox('f-d-sort','Urutkan',['Terbaru','Tenggat terdekat'])+
+  '<fieldset class="range" aria-describedby="range-msg"><legend>Rentang tanggal surat</legend><div class="range-row"><div class="fgroup"><label class="flabel" for="r-from">Dari tanggal</label><input class="input" type="date" id="r-from" data-range></div><div class="fgroup"><label class="flabel" for="r-to">Sampai tanggal</label><input class="input" type="date" id="r-to" data-range aria-describedby="r-err"></div><button type="button" class="btn" data-action="clear-range">Hapus rentang</button></div><p class="err" id="r-err" hidden></p><p class="range-msg" id="range-msg" aria-live="polite">Tanpa rentang: menampilkan surat 15 hari ke belakang sampai 15 hari ke depan yang belum selesai.</p></fieldset></div>'+
+  dataBlock({noun:'daftar disposisi',rows:5,normal:list,icon:'clipboard',emptyTitle:tab==='review'?'Tidak ada yang perlu direview':'Belum ada disposisi',emptyText:tab==='mine'?'Disposisi dari Kabagrenmin akan muncul di sini begitu surat didistribusikan kepada Anda.':tab==='given'?'Disposisi yang Anda teruskan ke staf akan dipantau di sini.':'Laporan selesai dari staf akan muncul di sini untuk Anda setujui atau kembalikan.',emptyAction:'<a class="btn" href="#/urmin/surat-masuk">Buka surat masuk</a>'})})+'</div>';
+}
+
+/* =====================================================================
+   HALAMAN 7 — DASHBOARD UNIT (Subbagren / Subbagsumda / Subbagbinfung)
+   Satu template; isi per unit dari UNIT_MODS + UNIT_DASH.
+   UNIT_MODS mengikuti registry produksi (App.tsx units[].modules).
+   Flag terakhir: 1 = punya layar kerja di produksi, 0 = "Segera hadir"
+   (produksi membuka tabel kosong dengan tombol nonaktif untuk modul ini).
+   ===================================================================== */
+const fmtRp=n=>'Rp '+n.toLocaleString('id-ID');
+const MOD_BERKAS=['berkas','Berkas, foto & disposisi','folder','Berkas kerja, dokumentasi kegiatan, dan disposisi internal unit.',1];
+const UNIT_MODS={
+ ren:[
+  ['Program & perencanaan',[['perencanaan','Dokumen perencanaan','file','Renstra, Renja, RKA-KL, DIPA, TOR/KAK, dan RAB.',0],['kinerja','Monitoring kinerja & LKIP','target','Indikator, target, capaian, dan evaluasi program.',0],['usulan','Usulan kebutuhan','clipboard','Kompilasi usulan kebutuhan dan anggaran dari setiap unit.',1]]],
+  ['Pagu anggaran',[['program','Program & anggaran','layers','Register program, pagu, dan target kegiatan.',0],['realisasi','Realisasi anggaran (LRA)','chart','Realisasi, penyerapan, dan tindak lanjut deviasi.',1]]],
+  ['Berkas & tugas',[MOD_BERKAS]]
+ ],
+ sumda:[
+  ['Layanan operasional',[['personel','Data administrasi personel','users','Register administrasi personel.',1],['layanan','Pelayanan kepegawaian','file','Pelacakan cuti, UKP, KGB, mutasi, dan pensiun.',0],['pendidikan','Pendidikan & pengembangan SDM','book','Pendidikan, pelatihan, dan kompetensi.',1],['inventaris','Inventaris & BMN','box','Barang milik negara, kondisi, dan penanggung jawab.',1],['pemeliharaan','Pemeliharaan logistik','tool','Permohonan dan pemantauan pemeliharaan.',0]]],
+  ['Berkas & tugas',[MOD_BERKAS]]
+ ],
+ binfung:[
+  ['Layanan operasional',[['sop','SOP, regulasi & metode','book','Register SOP, kebijakan internal, regulasi, dan metode kerja.',1],['pid','Informasi & dokumentasi (PID)','folder','Register informasi dan dokumentasi beserta tingkat aksesnya.',1],['rb','Reformasi birokrasi & SPIP','shield','Rencana aksi, eviden, SPIP, PMPRB, dan LKE.',1],['abk','Analisis beban kerja (ABK)','layers','Volume kerja dan analisis kebutuhan pelaksana.',1],['pembinaan','Program pembinaan fungsi','users','Kegiatan pembinaan, sasaran, waktu, peserta, dan hasil.',1],['evaluasi','Pembinaan & evaluasi organisasi','target','Temuan, rekomendasi, dan tindak lanjut evaluasi.',1]]],
+  ['Berkas & tugas',[MOD_BERKAS]]
+ ]
+};
+function findMod(uid,mid){let m=null;(UNIT_MODS[uid]||[]).forEach(g=>g[1].forEach(x=>{if(x[0]===mid)m=x;}));return m;}
+/* stats: [label, modul tujuan, nilai, keterangan, tandai-perlu-perhatian] */
+const UNIT_DASH={
+ ren:{desc:'Ringkasan usulan kebutuhan dan anggaran Subbagren yang dapat Anda akses.',primary:'Buat usulan kebutuhan',
+  stats:[['Usulan kebutuhan','usulan','23','Tahun anggaran 2027'],['Menunggu review','usulan','5','Perlu keputusan penelaah'],['Pagu terverifikasi','realisasi','Rp 4,8 miliar','Tahun anggaran 2026'],['Serapan anggaran','realisasi','61,4%','Rp 2,95 miliar terealisasi']],
+  stTitle:'Status usulan kebutuhan',stMod:'usulan',stLink:'Buka usulan kebutuhan',
+  status:[[B('neutral','Draf'),4],[B('warn','Menunggu review'),5],[B('danger','Perlu revisi'),2],[B('ok','Disetujui internal'),12]],
+  stEmpty:'Jumlah usulan per status akan tampil setelah ada usulan yang dicatat.',
+  reg:{title:'Usulan kebutuhan terbaru',mod:'usulan',link:'Buka semua usulan',noun:'usulan kebutuhan',ph:'Cari nomor, judul, atau unit pengusul',
+   statuses:['Semua status','Draf','Menunggu review','Perlu revisi','Disetujui internal'],
+   cols:[{h:'Nomor',mono:1},{h:'Usulan dan unit pengusul',rh:1},{h:'Tahun anggaran',mono:1},{h:'Estimasi',num:1},{h:'Klasifikasi'},{h:'Status'}],
+   rows:b=>[['USL-0023','Pengadaan pemindai arsip','Urmin',185000000,'Biasa',B('warn','Menunggu review')],['USL-0022','Pelatihan penyusunan LKIP','Subbagren',92500000,'Biasa',B('neutral','Draf')],['USL-0021','Pemeliharaan perangkat jaringan kantor','Subbagsumda',240000000,'Biasa',B('danger','Perlu revisi')],['USL-0020','Penyusunan peta proses bisnis','Subbagbinfung',76000000,'Biasa',B('ok','Disetujui internal')],['USL-0019','Pengamanan ruang server','Subbagsumda',310000000,'Rahasia',B('warn','Menunggu review')],['USL-0018','Langganan aplikasi pengolah dokumen','Urmin',48000000,'Biasa',B('ok','Disetujui internal')]]
+    .map(r=>[r[0],'<a class="row-link" href="'+b+'usulan">'+esc(r[1])+'</a><span class="sub">'+esc(r[2])+'</span>','2027',fmtRp(r[3]),klas(r[4]),badge(r[5])]),
+   pager:[6,23,'usulan'],
+   emptyTitle:'Belum ada usulan kebutuhan',emptyText:'Usulan yang disusun unit pengusul akan muncul di sini beserta status reviewnya.'}},
+ sumda:{desc:'Ringkasan data personel, pendidikan, dan BMN Subbagsumda yang dapat Anda akses.',primary:'Tambah data personel',
+  stats:[['Data personel','personel','248','Seluruh data tercatat'],['Pendidikan & pelatihan','pendidikan','17','90 hari terakhir'],['Aset BMN','inventaris','412','Seluruh data tercatat'],['Aset rusak berat','inventaris','6','Perlu pemeliharaan atau penghapusan',1]],
+  stTitle:'Status personel',stMod:'personel',stLink:'Buka data personel',
+  status:[[B('ok','Aktif'),231],[B('info','Mutasi'),11],[B('neutral','Pensiun'),4],[B('neutral','Lainnya'),2]],
+  stEmpty:'Jumlah personel per status akan tampil setelah data personel dicatat.',
+  reg:{title:'Data personel terbaru',mod:'personel',link:'Buka data personel',noun:'data personel',ph:'Cari ID internal, nama, atau jabatan',
+   statuses:['Semua status','Aktif','Mutasi','Pensiun','Lainnya'],
+   cols:[{h:'ID internal',mono:1},{h:'Personel dan jabatan',rh:1},{h:'Pangkat'},{h:'Unit kerja'},{h:'Klasifikasi'},{h:'Status'}],
+   rows:b=>[['PRS-0248','Andi Kurniawan','Bamin Urmin','Bripka','Urmin','Biasa',B('ok','Aktif')],['PRS-0247','Maya Anggraini','Staf perencanaan','Penata Muda','Subbagren','Biasa',B('ok','Aktif')],['PRS-0246','Rudi Hartono','Bamin logistik','Aipda','Subbagsumda','Biasa',B('info','Mutasi')],['PRS-0245','Yuni Rahmawati','Paur binfung','Iptu','Subbagbinfung','Rahasia',B('ok','Aktif')],['PRS-0244','Doni Prasetyo','Banum','Brigpol','Urmin','Biasa',B('ok','Aktif')],['PRS-0243','Lina Marlina','Analis SDM','Penata','Subbagsumda','Rahasia',B('ok','Aktif')],['PRS-0242','Hadi Susanto','Paur perencanaan','AKP','Subbagren','Biasa',B('neutral','Pensiun')],['PRS-0241','Tika Permata','Bamin','Bripda','Subbagsumda','Biasa',B('ok','Aktif')]]
+    .map(r=>[r[0],'<a class="row-link" href="'+b+'personel">'+esc(r[1])+'</a><span class="sub">'+esc(r[2])+'</span>',esc(r[3]),esc(r[4]),klas(r[5]),badge(r[6])]),
+   /* pengganti footer "sumda-list-footer": server mengembalikan maks. 100 data */
+   pager:[8,100,'data personel','Menampilkan 100 data terbaru. Persempit pencarian untuk melihat data lain.'],
+   emptyTitle:'Belum ada data personel',emptyText:'Data administrasi personel yang dicatat Subbagsumda akan muncul di sini.'}},
+ binfung:{desc:'Ringkasan SOP, informasi dan dokumentasi, serta RB dan SPIP Subbagbinfung yang dapat Anda akses.',primary:'Tambah SOP atau regulasi',
+  stats:[['SOP & regulasi','sop','64','Seluruh data tercatat'],['Informasi & dokumentasi','pid','128','Seluruh data tercatat'],['Rencana aksi RB & SPIP','rb','37','Tahun 2026'],['Perlu tindak lanjut','rb','5','Rencana aksi RB & SPIP',1]],
+  stTitle:'Status SOP & regulasi',stMod:'sop',stLink:'Buka SOP & regulasi',
+  status:[[B('ok','Aktif'),48],[B('warn','Dalam review'),6],[B('neutral','Draf'),7],[B('neutral','Dicabut'),3]],
+  stEmpty:'Jumlah dokumen per status akan tampil setelah SOP atau regulasi dicatat.',
+  reg:{title:'SOP & regulasi terbaru',mod:'sop',link:'Buka semua SOP & regulasi',noun:'SOP & regulasi',ph:'Cari kode, judul, atau pemilik proses',
+   statuses:['Semua status','Draf','Dalam review','Aktif','Nonaktif','Dicabut'],
+   cols:[{h:'Kode',mono:1},{h:'Judul dokumen',rh:1},{h:'Pemilik proses'},{h:'Tanggal berlaku',mono:1},{h:'Klasifikasi'},{h:'Status'}],
+   rows:b=>[['SOP-BF-12','Penyusunan dan reviu SOP unit','SOP · versi 2.0','Subbagbinfung','4 Nov 2026','Biasa',B('ok','Aktif')],['SOP-URM-03','Penerimaan dan pencatatan surat masuk','SOP · versi 2.1','Urmin','4 Nov 2026','Biasa',B('ok','Aktif')],['PDM-04','Pedoman pengelolaan informasi terbatas','Pedoman · versi 1.0','Subbagbinfung','28 Okt 2026','Rahasia',B('warn','Dalam review')],['SOP-SDM-07','Pengajuan cuti personel','SOP · versi 1.3','Subbagsumda','15 Okt 2026','Biasa',B('neutral','Draf')],['SOP-REN-07','Penyusunan RKA-KL','SOP · versi 3.0','Subbagren','18 Jan 2026','Biasa',B('ok','Aktif')],['SOP-REN-02','Penyusunan RKA-KL (versi lama)','SOP · versi 2.4','Subbagren','2 Feb 2024','Biasa',B('neutral','Dicabut')]]
+    .map(r=>[r[0],'<a class="row-link" href="'+b+'sop">'+esc(r[1])+'</a><span class="sub">'+esc(r[2])+'</span>',esc(r[3]),r[4],klas(r[5]),badge(r[6])]),
+   pager:[6,64,'dokumen'],
+   emptyTitle:'Belum ada SOP atau regulasi',emptyText:'SOP, peraturan, pedoman, dan metode kerja yang dicatat Subbagbinfung akan muncul di sini.'}}
+};
+function viewUnitDash(uid){
+ const u=UNITS[uid], D=UNIT_DASH[uid], R=D.reg, base='#/unit/'+uid+'/', kabag=S.role==='kabag';
+ const addBtn=cls=>'<button type="button" class="btn'+cls+'" data-action="noop">'+ic('plus',16)+esc(D.primary)+'</button>';
+ /* keterangan di dalam <dd> agar struktur <dl> tetap sah */
+ const statsN=()=>'<dl class="stats">'+D.stats.map(s=>'<div><dt><a href="'+base+s[1]+'">'+esc(s[0])+'</a></dt><dd'+(s[4]?' class="late"':'')+'>'+esc(s[2])+'<span class="hint">'+esc(s[3])+'</span></dd></div>').join('')+'</dl>';
+ const mods='<section class="panel" aria-labelledby="h-mods" style="--u:var(--u-'+u.c+');--us:var(--us-'+u.c+')"><div class="panel-h"><div class="ttl"><h2 id="h-mods">Modul '+esc(u.short)+'</h2></div><p class="sub">Modul bertanda Segera hadir belum memiliki layar kerja.</p></div>'+
+  UNIT_MODS[uid].map((g,gi)=>'<div class="mod-group"><h3 id="mg-'+gi+'">'+esc(g[0])+'</h3><ul class="rows" aria-labelledby="mg-'+gi+'">'+g[1].map(m=>'<li class="mod-row"><span class="mod-ic">'+ic(m[2],18)+'</span><div class="mod-txt">'+(m[4]?'<a class="row-link" href="'+base+m[0]+'">'+esc(m[1])+'</a>':'<span class="mod-name">'+esc(m[1])+'</span>')+'<p>'+esc(m[3])+'</p></div>'+(m[4]?'':'<span class="mod-soon">'+ic('clock',14)+'Segera hadir</span>')+'</li>').join('')+'</ul></div>').join('')+'</section>';
+ const status=panel({id:'h-ust',title:D.stTitle,link:'<a class="tlink" href="'+base+D.stMod+'">'+esc(D.stLink)+'</a>',body:'<div class="compact">'+dataBlock({noun:'ringkasan status',normal:()=>'<ul class="rows">'+D.status.map(c=>'<li><a class="count-row" href="'+base+D.stMod+'">'+badge(c[0])+'<strong>'+c[1]+'</strong></a></li>').join('')+'</ul>',icon:'chart',emptyTitle:'Belum ada data',emptyText:D.stEmpty})+'</div>'});
+ const reg=panel({id:'h-reg',title:R.title,link:'<a class="tlink" href="'+base+R.mod+'">'+esc(R.link)+'</a>',body:
+  '<div class="toolbar">'+searchBox('q-reg','Cari '+R.noun,R.ph,'t-reg')+selectBox('f-reg-st','Status',R.statuses)+selectBox('f-reg-k','Klasifikasi',['Semua','Biasa','Rahasia'])+'</div>'+
+  dataBlock({noun:'daftar '+R.noun,rows:5,normal:()=>tbl('t-reg',R.title,R.cols,R.rows(base))+pager.apply(null,['reg-'+uid].concat(R.pager)),icon:u.icon,emptyTitle:R.emptyTitle,emptyText:R.emptyText,emptyAction:kabag?'':addBtn('')})});
+ return crumbs([['Portal','#/portal'],[u.short,'#/unit/'+uid],['Dashboard']])+
+ phead('Dashboard '+u.short,D.desc,kabag?'':addBtn(' btn-primary'))+
+ '<div class="toolrow">'+selectBox('f-uperiod','Periode',['90 hari terakhir','30 hari terakhir','12 bulan terakhir','Semua waktu'])+'<button type="button" class="btn" data-action="retry">'+ic('refresh',16)+'Perbarui</button><span class="sample">Data contoh</span></div>'+
+ (S.state==='normal'?statsN():'')+
+ '<div class="dash-grid">'+mods+'<div class="stack">'+status+'</div></div>'+reg;
+}
+/* Rute modul unit: modul aktif = belum dibuat di prototipe; modul nonaktif = keadaan "Segera hadir". */
+function viewUnitModule(uid,mid){
+ const u=UNITS[uid], m=findMod(uid,mid), back='<a class="btn" href="#/unit/'+uid+'">Kembali ke dashboard '+esc(u.short)+'</a>';
+ if(!m)return crumbs([['Portal','#/portal'],[u.short,'#/unit/'+uid],['Modul tidak ditemukan']])+phead('Modul tidak ditemukan','Alamat ini tidak cocok dengan modul '+esc(u.short)+' mana pun. Buka modul dari dashboard unit.')+'<div class="panel"><div class="state">'+back+'</div></div>';
+ const c=crumbs([['Portal','#/portal'],[u.short,'#/unit/'+uid],[m[1]]]);
+ if(m[4])return c+notBuilt(m[1]);
+ return c+phead(m[1],esc(m[3]))+'<div class="panel"><div class="state"><span class="ic-wrap">'+ic('clock',22)+'</span><h3>Modul ini segera hadir</h3><p>Layar kerja '+esc(m[1].toLowerCase())+' belum tersedia, jadi belum ada data yang bisa dicari atau ditambahkan di sini. Modul lain di dashboard tetap dapat dipakai.</p>'+back+'</div></div>';
+}
+
+/* =====================================================================
+   HALAMAN 8 — PENGGUNA & AKSES + ROLE & IZIN (khusus Superadmin)
+   Menyembunyikan halaman ini dari peran lain BUKAN otorisasi:
+   server tetap menolak lewat AuthorizeRoleEditor.
+   ===================================================================== */
+const USERS=[
+ {id:'u1',n:'Admin Sistem',u:'admin.sistem',e:'admin@contoh.test',unit:'Administrasi sistem',role:'Superadmin',st:'active',otp:1,prot:1},
+ {id:'u2',n:'Hendra Wijaya',u:'hendra.wijaya',e:'hendra.wijaya@contoh.test',unit:'BagRenmin',role:'Pimpinan',st:'active',otp:1},
+ {id:'u3',n:'Rina Pratiwi',u:'rina.pratiwi',e:'rina.pratiwi@contoh.test',unit:'Urmin',role:'Operator',st:'active',otp:0},
+ {id:'u4',n:'Bayu Saputra',u:'bayu.saputra',e:'bayu.saputra@contoh.test',unit:'Urmin',role:'Operator',st:'active',otp:0},
+ {id:'u5',n:'Agus Setiawan',u:'agus.setiawan',e:'agus.setiawan@contoh.test',unit:'Urmin',role:'Operator',st:'must',otp:0},
+ {id:'u6',n:'Dewi Lestari',u:'dewi.lestari',e:'dewi.lestari@contoh.test',unit:'Subbagren',role:'Administrator unit',st:'active',otp:1},
+ {id:'u7',n:'Fajar Nugroho',u:'fajar.nugroho',e:'fajar.nugroho@contoh.test',unit:'Subbagsumda',role:'Operator',st:'inactive',otp:0},
+ {id:'u8',n:'Sari Wulandari',u:'sari.wulandari',e:'sari.wulandari@contoh.test',unit:'Subbagbinfung',role:'Operator',st:'must',otp:0}
+];
+const UST={active:B('ok','Aktif'),inactive:B('neutral','Nonaktif'),must:B('warn','Wajib ganti password')};
+const ROLE_LIST=[
+ {k:'superadmin',n:'Superadmin',d:'Mengelola pengguna, role, dan akses. Tidak membuka ruang kerja unit.',p:4,u:1,on:1,sys:1,lock:1},
+ {k:'administrator',n:'Administrator unit',d:'Mengelola data dan keanggotaan di unitnya.',p:18,u:2,on:1,sys:1},
+ {k:'operator',n:'Operator',d:'Mencatat dan memproses data harian unit.',p:24,u:9,on:1,sys:1},
+ {k:'pimpinan',n:'Pimpinan',d:'Memberi disposisi, menyetujui, dan memantau capaian.',p:15,u:2,on:1,sys:1},
+ {k:'penelaah_anggaran',n:'Penelaah anggaran',d:'Menelaah usulan kebutuhan dan realisasi anggaran.',p:6,u:0,on:0,sys:0}
+];
+function kelolaTabs(cur){return '<nav class="ptabs" aria-label="Bagian Kelola"><ul>'+KELOLA.map(k=>'<li><a href="'+k[2]+'"'+(k[0]===cur?' aria-current="page"':'')+'>'+k[1]+'</a></li>').join('')+'</ul></nav>';}
+function userActs(x){
+ if(x.prot)return '<span class="muted">Akun dilindungi</span>';
+ const off=x.st==='inactive';
+ return '<div class="row-acts"><button type="button" class="btn btn-sm" data-action="noop" aria-label="Ubah akses '+esc(x.n)+'">Ubah akses</button><button type="button" class="btn btn-sm" data-action="'+(off?'user-react':'user-deact')+'" data-id="'+x.id+'" aria-label="'+(off?'Aktifkan kembali akun ':'Nonaktifkan akun ')+esc(x.n)+'">'+(off?'Aktifkan kembali':'Nonaktifkan')+'</button></div>';
+}
+function viewUsers(){
+ const list=()=>tbl('t-users','Daftar pengguna',[{h:'Nama',rh:1},{h:'Username',mono:1},{h:'Unit utama'},{h:'Role'},{h:'Status'},{h:'OTP'},{h:'Aksi'}],
+  USERS.map(x=>['<span class="u-name">'+esc(x.n)+'</span><span class="sub">'+esc(x.e)+'</span>',esc(x.u),esc(x.unit),esc(x.role),'<span data-ust>'+badge(UST[x.st])+'</span>',x.prot?'Aktif (wajib)':x.otp?'Aktif':'Mati',userActs(x)]),
+  USERS.map(x=>'data-id="'+x.id+'" data-st="'+esc(UST[x.st].t)+'"'))+pager('users',USERS.length,USERS.length+6,'pengguna');
+ return crumbs([['Portal','#/portal'],['Kelola','#/kelola/pengguna'],['Pengguna & akses']])+
+ phead('Pengguna & akses','Kelola akun, unit, dan role. Menonaktifkan akun atau mengubah role langsung mengakhiri sesi pengguna tersebut.','<button type="button" class="btn btn-primary" data-action="user-add">'+ic('plus',16)+'Tambah pengguna</button>')+
+ kelolaTabs('pengguna')+
+ '<p class="callout">'+ic('info',16)+'<span>Akun Superadmin dilindungi dan selalu memakai OTP. Role menentukan jenis tindakan; akses ke setiap dokumen tetap diperiksa server berdasarkan unit, klasifikasi, dan status dokumen.</span></p>'+
+ panel({id:'h-users',title:'Daftar pengguna',body:'<div class="toolbar">'+searchBox('q-users','Cari pengguna','Cari nama, username, atau email','')+selectBox('f-u-st','Status',['Semua status','Aktif','Nonaktif','Wajib ganti password'])+'</div>'+
+  dataBlock({noun:'daftar pengguna',rows:5,normal:list,icon:'users',emptyTitle:'Belum ada akun operasional',emptyText:'Tambahkan akun untuk staf dan pimpinan, lalu tetapkan unit dan role agar mereka bisa bekerja.',emptyAction:'<button type="button" class="btn" data-action="user-add">'+ic('plus',16)+'Tambah pengguna</button>'})});
+}
+function viewRoles(){
+ const list=()=>tbl('t-roles','Daftar role',[{h:'Role',rh:1},{h:'Kunci',mono:1},{h:'Jumlah izin',num:1},{h:'Jumlah pengguna',num:1},{h:'Status'},{h:'Jenis'},{h:'Aksi'}],
+  ROLE_LIST.map(r=>['<span class="u-name">'+esc(r.n)+'</span><span class="sub">'+esc(r.d)+'</span>',esc(r.k),r.p,r.u,badge(r.on?B('ok','Aktif'):B('neutral','Nonaktif')),r.sys?'<span class="tag">Bawaan sistem</span>':'Dibuat administrator',r.lock?'<span class="muted">Terkunci</span>':'<button type="button" class="btn btn-sm" data-action="noop" aria-label="Lihat izin '+esc(r.n)+'">Lihat izin</button>']))+pager('roles',ROLE_LIST.length,ROLE_LIST.length,'role');
+ return crumbs([['Portal','#/portal'],['Kelola','#/kelola/pengguna'],['Role & izin']])+
+ phead('Role & izin','Role menentukan tindakan yang boleh dilakukan. Role diberikan ke pengguna di halaman Pengguna & akses.','<button type="button" class="btn btn-primary" data-action="noop">'+ic('plus',16)+'Buat role</button>')+
+ kelolaTabs('role')+
+ '<p class="callout">'+ic('info',16)+'<span>Role tidak otomatis membuka dokumen. Server tetap memeriksa unit, cakupan, klasifikasi, dan status setiap dokumen saat dibuka. Role Superadmin terkunci dan tidak dapat diubah di sini.</span></p>'+
+ panel({id:'h-roles',title:'Daftar role',body:dataBlock({noun:'daftar role',rows:4,normal:list,icon:'shield',emptyTitle:'Belum ada role',emptyText:'Role bawaan sistem seharusnya selalu ada. Muat ulang halaman; jika tetap kosong, hubungi pengelola server BagRenmin.',emptyAction:'<button type="button" class="btn" data-action="retry">'+ic('refresh',16)+'Muat ulang</button>'})});
+}
+/* Pesan galat field: pertahankan petunjuk (hint) di aria-describedby */
+function fErr(input,errId,hintId,msg){
+ const er=$('#'+errId);
+ if(msg){input.setAttribute('aria-invalid','true');input.setAttribute('aria-describedby',(hintId?hintId+' ':'')+errId);er.hidden=false;er.innerHTML=ic('alert',16)+'<span>'+esc(msg)+'</span>';}
+ else{input.removeAttribute('aria-invalid');if(hintId)input.setAttribute('aria-describedby',hintId);else input.removeAttribute('aria-describedby');er.hidden=true;}
+ return !msg;
+}
+function updateUserRow(x){
+ const tr=$('#t-users tr[data-id="'+x.id+'"]');if(!tr)return;
+ tr.dataset.st=UST[x.st].t;$('[data-ust]',tr).innerHTML=badge(UST[x.st]);
+ const b=$('[data-id="'+x.id+'"][data-action^="user-"]',tr);if(!b)return;
+ const off=x.st==='inactive';
+ b.dataset.action=off?'user-react':'user-deact';b.textContent=off?'Aktifkan kembali':'Nonaktifkan';b.setAttribute('aria-label',(off?'Aktifkan kembali akun ':'Nonaktifkan akun ')+x.n);
+}
+function openDeact(btn){
+ const x=USERS.find(u=>u.id===btn.dataset.id);if(!x)return;
+ openOverlay('<div class="dlg-backdrop"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-d"><form id="deact-form" data-id="'+x.id+'" novalidate>'+
+  '<div class="dlg-h"><h2 id="dlg-t">Nonaktifkan akun '+esc(x.n)+'?</h2></div>'+
+  '<div class="dlg-b"><p id="dlg-d">'+esc(x.n)+' (<span class="mono">'+esc(x.u)+'</span>) tidak bisa masuk lagi, dan sesi yang sedang berjalan langsung diakhiri. Data dan riwayat kerjanya tetap tersimpan. Akun bisa diaktifkan kembali kapan saja.</p>'+
+  '<div class="field"><label for="deact-reason">Alasan penonaktifan</label><textarea class="input" id="deact-reason" rows="3" aria-required="true" aria-describedby="deact-hint"></textarea><p class="hint" id="deact-hint">Wajib, minimal 8 karakter. Alasan dicatat di riwayat audit akun.</p><p class="err" id="deact-err" hidden></p></div></div>'+
+  '<div class="dlg-f"><button type="button" class="btn" data-action="dlg-close">Batal</button><button type="submit" class="btn btn-danger">Nonaktifkan akun</button></div></form></div></div>',btn,'.dlg [data-action=dlg-close]');
+}
+function addField(id,label,type,ac,hint){return '<div class="field"><label for="'+id+'">'+label+'</label><input class="input" id="'+id+'" type="'+type+'" autocomplete="'+ac+'" spellcheck="false" aria-required="true"'+(hint?' aria-describedby="'+id+'-hint"':'')+'>'+(hint?'<p class="hint" id="'+id+'-hint">'+hint+'</p>':'')+'<p class="err" id="'+id+'-err" hidden></p></div>';}
+function openAddUser(btn){
+ openOverlay('<div class="dlg-backdrop"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-d"><form id="add-user-form" novalidate>'+
+  '<div class="dlg-h"><div><h2 id="dlg-t">Tambah pengguna</h2><p class="hint" id="dlg-d">Password sementara dibuat otomatis dan ditampilkan sekali setelah akun tersimpan. Unit dan role ditetapkan sesudahnya lewat Ubah akses.</p></div></div>'+
+  '<div class="dlg-b">'+addField('au-name','Nama lengkap','text','off','')+addField('au-user','Username','text','off','Huruf kecil, angka, titik, atau garis bawah. Minimal 3 karakter.')+addField('au-mail','Email dinas','email','off','')+
+  '<div class="field"><label for="au-reason">Alasan pembuatan akun</label><textarea class="input" id="au-reason" rows="2" aria-required="true" aria-describedby="au-reason-hint"></textarea><p class="hint" id="au-reason-hint">Wajib, minimal 8 karakter. Dicatat di riwayat audit.</p><p class="err" id="au-reason-err" hidden></p></div></div>'+
+  '<div class="dlg-f"><button type="button" class="btn" data-action="dlg-close">Batal</button><button type="submit" class="btn btn-primary">Simpan dan buat password</button></div></form></div></div>',btn,'#au-name');
+}
+function openSecret(x){
+ /* Password contoh tetap (fiktif). Di produksi nilainya dari respons API, tidak pernah disimpan di browser. */
+ openOverlay('<div class="dlg-backdrop"><div class="dlg" id="secret-dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-d">'+
+  '<div class="dlg-h"><div><span class="kat">Data contoh</span><h2 id="dlg-t">Akun dibuat: catat password sementara</h2></div></div>'+
+  '<div class="dlg-b"><p id="dlg-d">Akun '+esc(x.n)+' (username <span class="mono">'+esc(x.u)+'</span>) sudah dibuat. Serahkan password ini lewat saluran yang aman. Pengguna wajib menggantinya saat pertama kali masuk.</p>'+
+  '<div class="secret"><code id="pw-val">Contoh-7kQm-24Rx-Lw9p</code><button type="button" class="btn" id="copy-pw" data-action="copy-pw">'+ic('copy',16)+'Salin</button></div>'+
+  '<p class="callout">'+ic('info',16)+'<span>Password hanya ditampilkan sekali dan tidak disimpan di browser. Setelah dialog ini ditutup, password tidak bisa ditampilkan lagi.</span></p></div>'+
+  '<div class="dlg-f"><span></span><button type="button" class="btn" data-action="secret-close">Saya sudah mencatat, tutup</button></div></div></div>',$('[data-action=user-add]'),'#copy-pw');
+ /* Escape tidak menutup dialog ini: password sekali tampil, salah tekan berarti harus reset. */
+ const d=$('#secret-dlg');if(d)d.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();say('Catat password terlebih dahulu, lalu pilih Saya sudah mencatat, tutup.');}});
+}
+function filterUsers(){
+ const box=$('#t-users');if(!box)return;
+ const q=($('#q-users').value||'').trim().toLowerCase(), st=$('#f-u-st').value;
+ let n=0;$$('tbody tr:not(.nomatch)',box).forEach(r=>{const ok=(!q||r.textContent.toLowerCase().includes(q))&&(st==='Semua status'||r.dataset.st===st);r.hidden=!ok;if(ok)n++;});
+ let nm=$('.nomatch',box);
+ if(!n){if(!nm){nm=document.createElement('tr');nm.className='nomatch';$('tbody',box).appendChild(nm);}nm.innerHTML='<td colspan="7">Tidak ada pengguna yang cocok dengan pencarian atau filter status. Periksa ejaan, atau pilih Semua status.</td>';nm.hidden=false;}
+ else if(nm)nm.hidden=true;
+ say(n+' pengguna ditampilkan.');
+}
+
+/* ---------- Halaman penolakan peran (tampilan saja; otorisasi tetap di server) ---------- */
+function denyPage(what){return phead(what+' tidak tersedia untuk akun ini','Akun Superadmin mengelola pengguna dan akses. Server menolak permintaan ruang kerja unit dari akun ini, jadi halaman ini tidak memuat data.','<a class="btn btn-primary" href="#/kelola/pengguna">Buka Pengguna & akses</a>');}
+
+/* =====================================================================
+   ROUTER — tambahkan halaman baru di resolve()
+   kembalikan {nav, title, body, ws?, menu?}; body = HTML lengkap di bawah header
+   ===================================================================== */
+function route(){
+ const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+ return resolve(p.length?p:['login']);
+}
+function resolve(p){
+ const a=p[0],b=p[1],c=p[2],sa=S.role==='superadmin';
+ const wrap=h=>'<main id="main" tabindex="-1" class="page">'+h+'</main>';
+ if(a==='login')return {login:true,title:'Masuk'};
+ if(a==='portal')return {nav:'portal',title:'Portal',body:wrap(viewPortal(b||'beranda'))};
+ if(a==='urmin'){
+  const menu=b||'dashboard';
+  if(sa)return {nav:'',title:'Urmin',body:wrap(denyPage('Ruang kerja Urmin'))};
+  let inner,title;
+  if(menu==='dashboard'){inner=viewUrminDash();title='Dashboard Urmin';}
+  else if(menu==='surat-masuk'){inner=c?viewSuratMasukDetail(c):viewSuratMasuk();title='Surat masuk';}
+  else if(menu==='surat-keluar'){inner=c?viewSuratKeluarDetail(c):viewSuratKeluar();title='Surat keluar';}
+  else if(menu==='disposisi'){inner=viewDisposisi(true);title='Disposisi';}
+  else {const m=URMIN_MENU.find(x=>x[0]===menu);title=m?m[1]:'Urmin';inner=crumbs([['Portal','#/portal'],['Urmin','#/urmin'],[title]])+notBuilt(title);}
+  return {nav:'',title:title+' · Urmin',ws:'urmin',menu:menu,body:workspace('urmin',menu,inner)};
+ }
+ if(a==='unit'){ /* HALAMAN 7 */
+  const uid=UNIT_MODS[b]?b:'ren', u=UNITS[uid];
+  if(sa)return {nav:'',title:u.short,body:wrap(denyPage('Ruang kerja '+u.short))};
+  if(c){const m=findMod(uid,c);return {nav:'',title:(m?m[1]:'Modul tidak ditemukan')+' · '+u.short,ws:uid,menu:c,body:workspace(uid,c,viewUnitModule(uid,c))};}
+  return {nav:'',title:'Dashboard '+u.short,ws:uid,menu:'dashboard',body:workspace(uid,'dashboard',viewUnitDash(uid))};
+ }
+ if(a==='kelola'){ /* HALAMAN 8 */
+  const t=b==='role'?'Role & izin':'Pengguna & akses';
+  if(!sa)return {nav:'',title:t,body:wrap(crumbs([['Portal','#/portal'],[t]])+phead(t+' khusus Superadmin','Halaman ini hanya untuk administrator identitas. Server menolak permintaan dari akun lain, jadi halaman ini tidak memuat data. Di prototipe, pilih peran Superadmin di bilah bawah untuk melihatnya.','<a class="btn btn-primary" href="#/portal">Buka Portal</a>'))};
+  return {nav:'kelola',title:t,body:wrap(b==='role'?viewRoles():viewUsers())};
+ }
+ if(a==='tugas'){if(sa)return {nav:'',title:'Tugas',body:wrap(denyPage('Tugas disposisi'))};return {nav:'tugas',title:'Tugas disposisi',body:wrap(viewDisposisi(false))};}
+ const simple={arahan:'Arahan pimpinan',inbox:'Inbox distribusi',dashboard:'Dashboard pimpinan',profil:'Profil saya'};
+ if(simple[a]){
+  if(a==='profil'){const m=me();return {nav:'',title:'Profil saya',body:wrap(crumbs([['Portal','#/portal'],['Profil saya']])+phead('Profil saya','Data akun Anda. Perubahan nama dan email dilakukan oleh administrator.')+panel({id:'h-prof',title:'Akun',body:'<div class="panel-b"><dl class="dl"><div><dt>Nama</dt><dd>'+esc(m.name)+'</dd></div><div><dt>Jabatan</dt><dd>'+esc(m.title)+'</dd></div><div><dt>Email</dt><dd>'+esc(m.email)+'</dd></div></dl>'+themeSet('tp-p')+'</div>'}))};}
+  return {nav:a,title:simple[a],body:wrap(crumbs([['Portal','#/portal'],[simple[a]]])+notBuilt(simple[a]))};
+ }
+ return {nav:'',title:'Halaman tidak ditemukan',body:wrap(phead('Halaman tidak ditemukan','Alamat ini tidak ada di prototipe.','<a class="btn btn-primary" href="#/portal">Buka Portal</a>'))};
+}
+
+/* ---------- Render ---------- */
+function render(opt){
+ opt=opt||{};
+ const r=route();
+ closeOverlays(true);
+ $('#app').innerHTML=r.login?viewLogin():header(r.nav)+r.body;
+ document.title=r.title+' – SIERA DELTA LIMA (prototipe)';
+ applyTheme();syncBar();
+ if(!S.first&&opt.focus!==false){window.scrollTo(0,0);const h=$('#page-title');if(h)h.focus();}
+ S.first=false;
+}
+
+/* ---------- Tema ---------- */
+function getPref(){try{return localStorage.getItem('sdl-theme')||'system';}catch(e){return 'system';}}
+function setPref(v){try{localStorage.setItem('sdl-theme',v);}catch(e){}applyTheme();}
+function applyTheme(){
+ const pref=getPref(), dark=pref==='dark'||(pref==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
+ document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+ $$('[data-action=theme-toggle]').forEach(b=>{b.setAttribute('aria-pressed',String(dark));b.innerHTML=ic(dark?'sun':'moon',18);});
+ $$('[data-theme-pref]').forEach(r=>{r.checked=r.value===pref;});
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
+
+/* ---------- Bilah prototipe ---------- */
+const PAGES=[['#/login','Login'],['#/portal','Portal · Beranda'],['#/portal/berita','Portal · Berita & pengumuman'],['#/portal/kalender','Portal · Kalender'],['#/portal/sop','Portal · SOP & peraturan'],['#/urmin','Urmin · Dashboard'],['#/urmin/surat-masuk','Urmin · Surat masuk'],['#/urmin/surat-masuk/sm1','Urmin · Detail surat masuk'],['#/urmin/surat-keluar','Urmin · Surat keluar'],['#/urmin/surat-keluar/sk2','Urmin · Detail surat keluar'],['#/urmin/disposisi','Urmin · Disposisi'],['#/unit/ren','Subbagren · Dashboard'],['#/unit/sumda','Subbagsumda · Dashboard'],['#/unit/binfung','Subbagbinfung · Dashboard'],['#/unit/sumda/layanan','Subbagsumda · Modul segera hadir'],['#/kelola/pengguna','Kelola · Pengguna & akses'],['#/kelola/role','Kelola · Role & izin']];
+$('#p-page').innerHTML='<option value="">Halaman lain</option>'+PAGES.map(p=>'<option value="'+p[0]+'">'+p[1]+'</option>').join('');
+function syncBar(){
+ const h=location.hash||'#/login';
+ $('#p-page').value=PAGES.some(p=>p[0]===h)?h:'';
+ $('#p-role').value=S.role;$('#p-state').value=S.state;
+ const login=h.indexOf('#/login')===0||h==='';
+ const L=login?{normal:'Formulir',loading:'Menunggu verifikasi perangkat',empty:'Tahap kode verifikasi',error:'Gagal masuk'}:{normal:'Normal',loading:'Memuat',empty:'Kosong',error:'Error'};
+ $$('#p-state option').forEach(o=>{o.textContent=L[o.value];});
+ document.body.classList.toggle('proto-off',!S.bar);
+}
+$('#p-page').addEventListener('change',e=>{
+ const v=e.target.value;if(!v)return;
+ if(v.indexOf('#/kelola')===0&&S.role!=='superadmin'){S.role='superadmin';toast('Peran diganti ke Superadmin untuk halaman ini.');}
+ else if(/^#\/(urmin|unit|tugas|inbox|arahan)/.test(v)&&S.role==='superadmin'){S.role='operator';toast('Peran diganti ke Operator Urmin untuk halaman ini.');}
+ location.hash=v;
+});
+$('#p-role').addEventListener('change',e=>{S.role=e.target.value;render({focus:false});toast('Peran: '+me().title+'.');});
+$('#p-state').addEventListener('change',e=>{S.state=e.target.value;render({focus:false});say('Keadaan data: '+e.target.selectedOptions[0].textContent);});
+$('#p-hide').addEventListener('click',()=>{S.bar=false;syncBar();const h=$('#page-title');if(h)h.focus();say('Bilah prototipe disembunyikan. Tekan Alt+Shift+P untuk menampilkan lagi.');});
+
+/* ---------- Umpan balik ---------- */
+function say(msg){const el=$('#sr-live');el.textContent='';setTimeout(()=>{el.textContent=msg;},50);}
+function toast(msg,err){const el=document.createElement('div');el.className='toast'+(err?' toast-err':'');el.innerHTML=ic(err?'alert':'check',18)+'<span>'+esc(msg)+'</span>';$('#toasts').appendChild(el);setTimeout(()=>el.remove(),6000);}
+
+/* ---------- Overlay: dialog & drawer (focus trap, Escape, fokus kembali) ---------- */
+let ret=null;
+const FOC='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+function setInert(on){$('#app').inert=on;$('#proto').inert=on;}
+function openOverlay(html,trigger,initial){
+ ret=trigger||document.activeElement;
+ $('#overlay-root').innerHTML=html;setInert(true);
+ const root=$('#overlay-root'), first=initial?$(initial,root):$$(FOC,root)[0];
+ if(first)first.focus();
+}
+function closeOverlays(silent){
+ const root=$('#overlay-root');if(!root.innerHTML)return;
+ root.innerHTML='';setInert(false);
+ if(!silent&&ret&&document.contains(ret))ret.focus();
+ ret=null;
+}
+function openDrawer(btn){
+ openOverlay(drawerHTML(),btn,'#drawer .icon-btn');
+ btn.setAttribute('aria-expanded','true');
+ requestAnimationFrame(()=>{const d=$('#drawer');if(d)d.classList.add('open');});
+ applyTheme();
+}
+function openNews(i,btn){
+ const n=NEWS[i];
+ openOverlay('<div class="dlg-backdrop" data-action="dlg-backdrop"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-t"><div class="dlg-h"><div><span class="kat">'+n.k+' · '+n.d+' · Data contoh</span><h2 id="dlg-t">'+esc(n.t)+'</h2></div><button type="button" class="icon-btn" data-action="dlg-close" aria-label="Tutup">'+ic('x',18)+'</button></div><div class="dlg-b"><p>'+esc(n.s)+'</p><p>Isi lengkap berita tampil di sini. Teks ini adalah contoh untuk menguji panjang baris dan keterbacaan, dibatasi sekitar 72 karakter per baris.</p></div><div class="dlg-f"><span></span><button type="button" class="btn" data-action="dlg-close">Tutup</button></div></div></div>',btn,'.dlg [data-action=dlg-close]');
+}
+document.addEventListener('keydown',e=>{
+ if(e.altKey&&e.shiftKey&&(e.key==='P'||e.key==='p')){e.preventDefault();S.bar=!S.bar;syncBar();say(S.bar?'Bilah prototipe ditampilkan.':'Bilah prototipe disembunyikan.');return;}
+ const root=$('#overlay-root');
+ if(e.key==='Escape'){
+  if(root.innerHTML){e.preventDefault();closeOverlays(false);const b=$('.burger');if(b)b.setAttribute('aria-expanded','false');return;}
+  const open=$('[data-action=disc][aria-expanded=true]');if(open){toggleDisc(open,false);open.focus();}
+  return;
+ }
+ if(e.key==='Tab'&&root.innerHTML){
+  const f=$$(FOC,root).filter(x=>x.offsetParent!==null||x===document.activeElement);if(!f.length)return;
+  const first=f[0],last=f[f.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+ }
+ const t=e.target;
+ if(t.getAttribute&&t.getAttribute('role')==='tab'&&['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){
+  e.preventDefault();const list=$$('[role=tab]',t.parentNode);let i=list.indexOf(t);
+  i=e.key==='Home'?0:e.key==='End'?list.length-1:(i+(e.key==='ArrowRight'?1:-1)+list.length)%list.length;
+  selectTab(list[i]);
+ }
+});
+
+/* ---------- Disclosure (menu Kelola, menu akun) ---------- */
+function toggleDisc(btn,force){
+ const el=document.getElementById(btn.getAttribute('aria-controls'));if(!el)return;
+ const open=force!==undefined?force:btn.getAttribute('aria-expanded')!=='true';
+ $$('[data-action=disc][aria-expanded=true]').forEach(b=>{if(b!==btn){b.setAttribute('aria-expanded','false');const m=document.getElementById(b.getAttribute('aria-controls'));if(m)m.hidden=true;}});
+ btn.setAttribute('aria-expanded',String(open));el.hidden=!open;
+}
+function selectTab(btn){
+ S.tabs[btn.dataset.group]=btn.dataset.val;render({focus:false});
+ const n=$('#tab-'+btn.dataset.group+'-'+btn.dataset.val);if(n)n.focus();
+}
+
+/* ---------- Delegasi klik ---------- */
+const ACTIONS={
+ skip(e){e.preventDefault();const m=$('#main');if(m)m.focus();},
+ 'theme-toggle'(){const dark=document.documentElement.getAttribute('data-theme')==='dark';setPref(dark?'light':'dark');},
+ disc(e,t){toggleDisc(t);},
+ 'drawer-open'(e,t){openDrawer(t);},
+ 'drawer-close'(){closeOverlays(false);const b=$('.burger');if(b)b.setAttribute('aria-expanded','false');},
+ 'dlg-close'(){closeOverlays(false);},
+ 'dlg-backdrop'(e,t){if(e.target===t)closeOverlays(false);},
+ news(e,t){openNews(+t.dataset.i,t);},
+ tab(e,t){selectTab(t);},
+ retry(){
+  S.state='loading';render({focus:false});syncBar();say('Memuat ulang data…');
+  const h=$('#page-title');if(h)h.focus();
+  setTimeout(()=>{S.state='normal';render({focus:false});const h2=$('#page-title');if(h2)h2.focus();toast('Data dimuat ulang.');},900);
+ },
+ page(e,t){
+  const pg=t.closest('[data-pager]'),key=pg.dataset.pager,pages=+pg.dataset.pages;
+  let p=(S.page[key]||1)+(+t.dataset.dir);p=Math.max(1,Math.min(pages,p));S.page[key]=p;
+  $('[data-pager-label]',pg).textContent='Halaman '+p+' dari '+pages;
+  const [prev,next]=$$('[data-action=page]',pg);prev.disabled=p<=1;next.disabled=p>=pages;
+  if(t.disabled)(t===prev?next:prev).focus();
+ },
+ 'pw-toggle'(e,t){const i=$('#f-pass'),show=i.type==='password';i.type=show?'text':'password';t.setAttribute('aria-pressed',String(show));t.innerHTML=ic(show?'eyeOff':'eye',18);},
+ 'otp-back'(){S.state='normal';S.loginStep='cred';render();const u=$('#f-user');if(u)u.focus();},
+ 'clear-range'(){$('#r-from').value='';$('#r-to').value='';checkRange();$('#r-from').focus();},
+ logout(){S.state='normal';S.loginStep='cred';location.hash='#/login';toast('Anda sudah keluar.');},
+ noop(){toast('Simulasi: aksi ini tidak dijalankan di prototipe.');}
+};
+document.addEventListener('click',e=>{
+ const t=e.target.closest('[data-action]');
+ if(!t){const open=$('[data-action=disc][aria-expanded=true]');if(open&&!e.target.closest('.menu'))toggleDisc(open,false);return;}
+ const f=ACTIONS[t.dataset.action];if(f)f(e,t);
+});
+document.addEventListener('change',e=>{
+ if(e.target.matches('[data-theme-pref]'))setPref(e.target.value);
+ if(e.target.matches('[data-range]'))checkRange();
+});
+
+/* ---------- Pencarian lokal di tabel/daftar ---------- */
+document.addEventListener('input',e=>{
+ const inp=e.target;if(!inp.dataset||!inp.dataset.filter)return;
+ const box=document.getElementById(inp.dataset.filter);if(!box)return;
+ const q=inp.value.trim().toLowerCase();
+ const items=box.tagName==='TABLE'?$$('tbody tr:not(.nomatch)',box):$$(':scope>li',box);
+ let n=0;items.forEach(r=>{const ok=!q||r.textContent.toLowerCase().includes(q);r.hidden=!ok;if(ok)n++;});
+ let nm=$('.nomatch',box);
+ if(!n&&q){
+  if(!nm){nm=document.createElement(box.tagName==='TABLE'?'tr':'li');nm.className='nomatch';(box.tagName==='TABLE'?$('tbody',box):box).appendChild(nm);}
+  const span=box.tagName==='TABLE'?$$('thead th',box).length:1;
+  nm.innerHTML=(box.tagName==='TABLE'?'<td colspan="'+span+'">':'<div class="state">')+'Tidak ada hasil untuk “'+esc(inp.value)+'”. Periksa ejaan atau kosongkan pencarian.'+(box.tagName==='TABLE'?'</td>':'</div>');
+  nm.hidden=false;
+ } else if(nm) nm.hidden=true;
+ say(q?n+' hasil ditemukan.':'Pencarian dikosongkan.');
+});
+
+/* ---------- Interaksi halaman 8 (Pengguna & akses) ---------- */
+Object.assign(ACTIONS,{
+ 'user-add'(e,t){openAddUser(t);},
+ 'user-deact'(e,t){openDeact(t);},
+ 'user-react'(e,t){/* tidak destruktif: langsung, dengan umpan balik. Produksi juga meminta alasan (lihat laporan). */
+  const x=USERS.find(u=>u.id===t.dataset.id);if(!x)return;
+  x.st=x.prev&&x.prev!=='inactive'?x.prev:'active';updateUserRow(x);toast('Akun '+x.n+' diaktifkan kembali.');},
+ 'copy-pw'(e,t){
+  const v=$('#pw-val').textContent;
+  const done=()=>{t.innerHTML=ic('check',16)+'Tersalin';say('Password sementara disalin.');};
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents($('#pw-val'));const s=getSelection();s.removeAllRanges();s.addRange(r);let ok=false;try{ok=document.execCommand('copy');}catch(_){}
+   if(ok)done();else toast('Tidak dapat menyalin otomatis. Password sudah dipilih; tekan Ctrl+C untuk menyalin.',true);};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(v).then(done,fallback);else fallback();
+ },
+ 'secret-close'(){const x=S.newUser;closeOverlays(false);if(x)toast('Akun '+x.n+' ditambahkan. Tetapkan unit dan role lewat Ubah akses.');S.newUser=null;}
+});
+document.addEventListener('input',e=>{if(e.target.id==='q-users')filterUsers();});
+document.addEventListener('change',e=>{if(e.target.id==='f-u-st')filterUsers();});
+document.addEventListener('submit',e=>{
+ const f=e.target;
+ if(f.id==='deact-form'){
+  e.preventDefault();
+  const r=$('#deact-reason'),v=r.value.trim();
+  if(!fErr(r,'deact-err','deact-hint',!v?'Isi alasan penonaktifan. Alasan ini dicatat di riwayat audit akun.':v.length<8?'Alasan terlalu pendek. Tulis minimal 8 karakter, misalnya “Pindah tugas ke satuan lain”.':'')){r.focus();return;}
+  const x=USERS.find(u=>u.id===f.dataset.id);if(!x)return;
+  x.prev=x.st;x.st='inactive';updateUserRow(x);
+  closeOverlays(false);toast('Akun '+x.n+' dinonaktifkan.');
+ }
+ if(f.id==='add-user-form'){
+  e.preventDefault();
+  const n=$('#au-name'),u=$('#au-user'),m=$('#au-mail'),r=$('#au-reason');
+  const un=u.value.trim().toLowerCase(), mail=m.value.trim().toLowerCase(), rs=r.value.trim();
+  fErr(n,'au-name-err','',n.value.trim()?'':'Isi nama lengkap pengguna.');
+  fErr(u,'au-user-err','au-user-hint',!un?'Isi username.':!/^[a-z0-9._]{3,}$/.test(un)?'Username hanya boleh huruf kecil, angka, titik, atau garis bawah, minimal 3 karakter.':USERS.some(x=>x.u===un)?'Username '+un+' sudah dipakai. Pilih username lain.':'');
+  fErr(m,'au-mail-err','',!mail?'Isi email dinas.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)?'Format email belum benar. Contoh: nama@contoh.test':USERS.some(x=>x.e===mail)?'Email ini sudah dipakai akun lain.':'');
+  fErr(r,'au-reason-err','au-reason-hint',!rs?'Isi alasan pembuatan akun.':rs.length<8?'Alasan terlalu pendek. Tulis minimal 8 karakter.':'');
+  const bad=$('[aria-invalid=true]',f);if(bad){bad.focus();return;}
+  const nu={id:'u'+(USERS.length+1),n:n.value.trim(),u:un,e:mail,unit:'Belum ditetapkan',role:'Belum ditetapkan',st:'must',otp:0};
+  USERS.push(nu);S.newUser=nu;
+  render({focus:false}); /* menutup dialog formulir & menampilkan baris baru */
+  openSecret(nu);
+ }
+});
+
+/* ---------- Validasi rentang tanggal disposisi ---------- */
+function checkRange(){
+ const f=$('#r-from'),t=$('#r-to'),err=$('#r-err'),msg=$('#range-msg');if(!f)return;
+ t.removeAttribute('aria-invalid');err.hidden=true;
+ if(f.value&&t.value&&t.value<f.value){t.setAttribute('aria-invalid','true');err.hidden=false;err.innerHTML=ic('alert',16)+'<span>Tanggal "Sampai" harus sama dengan atau setelah tanggal "Dari". Ubah salah satu tanggal.</span>';msg.textContent='Rentang belum diterapkan.';return;}
+ msg.textContent=f.value&&t.value?'Rentang diterapkan: '+fmtISO(f.value)+' sampai '+fmtISO(t.value)+'.':(f.value||t.value)?'Isi kedua tanggal untuk menerapkan rentang.':'Tanpa rentang: menampilkan surat 15 hari ke belakang sampai 15 hari ke depan yang belum selesai.';
+}
+
+/* ---------- Formulir login & OTP ---------- */
+function fieldErr(input,errEl,msg){
+ if(msg){input.setAttribute('aria-invalid','true');input.setAttribute('aria-describedby',errEl.id);errEl.hidden=false;errEl.innerHTML=ic('alert',16)+'<span>'+msg+'</span>';}
+ else{input.removeAttribute('aria-invalid');errEl.hidden=true;if(input.id!=='f-otp')input.removeAttribute('aria-describedby');}
+}
+document.addEventListener('submit',e=>{
+ if(e.target.id==='login-form'){
+  e.preventDefault();
+  const u=$('#f-user'),p=$('#f-pass');
+  fieldErr(u,$('#f-user-err'),u.value.trim()?'':'Isi username atau email Anda.');
+  fieldErr(p,$('#f-pass-err'),p.value?'':'Isi password Anda.');
+  const bad=$('[aria-invalid=true]',e.target);if(bad){bad.focus();return;}
+  const un=u.value.trim().toLowerCase();S.role=/admin/.test(un)?'superadmin':/hendra|kabag/.test(un)?'kabag':'operator';
+  S.loginStep='otp';render();const o=$('#f-otp');if(o)o.focus();say('Kode verifikasi dikirim ke email Anda.');
+ }
+ if(e.target.id==='otp-form'){
+  e.preventDefault();const o=$('#f-otp');
+  if(!/^\d{6}$/.test(o.value)){o.setAttribute('aria-invalid','true');o.setAttribute('aria-describedby','f-otp-hint f-otp-err');const er=$('#f-otp-err');er.hidden=false;er.innerHTML=ic('alert',16)+'<span>Kode harus 6 angka. Salin dari email terbaru, tanpa spasi.</span>';o.focus();return;}
+  S.state='normal';S.loginStep='cred';location.hash='#/portal';
+ }
+});
+
+window.addEventListener('hashchange',()=>{if(location.hash.indexOf('#/')===0||location.hash==='')render();});
+render();
+})();
+</script>
 </body>
 </html>
