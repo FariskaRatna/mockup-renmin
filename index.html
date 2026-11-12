@@ -38,6 +38,12 @@ document.documentElement.setAttribute('data-theme',d?'dark':'light')})();
 :root[data-theme=dark]{--primary:#3a5f93;--st-neutral:#c7d4e6;--st-info:#9fc2f0;--st-warn:#f0c27a;--st-danger:#ff9ea6;--st-ok:#7fdcb5;--danger-bg:#3a2228;
   --u-urmin:#6fd1b5;--u-ren:#9fbff0;--u-sumda:#c9aeea;--u-binfung:#e6be82;--u-spip:#c7d4e6;
   --us-urmin:#183a34;--us-ren:#1d3150;--us-sumda:#2e2645;--us-binfung:#3a2f1e;--us-spip:#1c2e45}
+/* Palet grafik (Dashboard pimpinan) — BUKAN token style.css. Divalidasi dengan validate_palette.js
+   (skill dataviz): ALL CHECKS PASS di latar terang, gelap #0c1525, dan kartu gelap #162438;
+   ΔE normal terkecil 30.7, CVD terkecil 25.7. Hanya untuk MARK (batang, segmen), tidak untuk teks.
+   Status sama di kedua tema dan selalu disertai label teks; magnitudo = satu hue biru. */
+:root{--ch-ok:#0ca30c;--ch-run:#3987e5;--ch-late:#d03b3b;--ch-seq:#256abf}
+:root[data-theme=dark]{--ch-seq:#5598e7}
 body.proto-off{--proto-h:0px}
 
 /* 3. DASAR */
@@ -368,7 +374,7 @@ a.tile:hover{border-color:var(--ink-2)}
 }
 
 /* 11. DASHBOARD URMIN */
-.dash-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;margin-bottom:16px}
+.dash-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;margin-bottom:16px;align-items:start}
 .job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;padding:12px 16px;align-items:start}
 .job .meta{grid-column:1/-1;font-size:var(--fs-13);color:var(--muted)}
 .count-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px;min-height:44px;text-decoration:none;color:inherit}
@@ -445,6 +451,85 @@ body.proto-off .proto{display:none}
 textarea.input{min-height:80px;resize:vertical;line-height:var(--lh-body)}
 .secret{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:12px}
 .secret code{flex:1 1 220px;display:flex;align-items:center;padding:8px 12px;border:1px dashed var(--border-input);border-radius:8px;background:var(--subtle);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:var(--fs-16);letter-spacing:.04em;word-break:break-all}
+
+/* 17. DASHBOARD PIMPINAN (halaman 9) — monokrom + navy; warna hanya pada mark grafik */
+.exec .stats dd{font-variant-numeric:normal}
+.exec .stats dd .ic{display:inline-block;vertical-align:-3px;margin-right:4px}
+.exec .stats dd .hint{margin-top:2px}
+.dash-meta{display:flex;align-items:center;min-height:40px;font-size:var(--fs-13);color:var(--muted)}
+.exec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px;align-items:start}
+@media (max-width:1000px){.exec-grid{grid-template-columns:1fr}}
+.job-t{font-weight:600}
+.dec-group+.dec-group{border-top:1px solid var(--border)}
+.dec-group h3{font-size:var(--fs-14);font-weight:600;color:var(--ink-2);padding:12px 16px 0}
+.due-late{display:inline-flex;align-items:center;gap:4px;color:var(--st-danger);font-weight:600;white-space:nowrap}
+.due-late .ic{display:inline-block}
+/* Legenda: kunci warna di samping teks; teks memakai token teks, bukan warna seri */
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;list-style:none;margin:0;padding:12px 16px 0;font-size:var(--fs-13);color:var(--ink-2)}
+.legend li{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;background:var(--c);flex:none}
+.sw-line{width:2px;height:16px;border-radius:1px;background:var(--ink);flex:none}
+/* Tooltip grafik: muncul saat mark di-hover atau difokus. Diposisikan relatif ke area grafik
+   dengan left:p% + translateX(-p%) sehingga tidak pernah keluar dari area (aman di 320px). */
+.ch-tip{display:none;position:absolute;z-index:5;pointer-events:none;padding:6px 10px;background:var(--card);color:var(--ink-2);border:1px solid var(--border-input);border-radius:6px;box-shadow:0 4px 12px rgba(17,31,53,.16);font-size:var(--fs-12);line-height:1.4;white-space:nowrap}
+.ch-tip strong{display:block;color:var(--ink);font-size:var(--fs-14)}
+.ch-tip .k{display:inline-block;width:12px;height:2px;margin-right:6px;vertical-align:middle;background:var(--c)}
+[data-mark]:hover+.ch-tip,[data-mark]:focus+.ch-tip{display:block}
+/* Kolom (tren 6 bulan, small multiples berskala sama) */
+.minis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;padding:16px}
+.mini{margin:0;min-width:0}
+.mini figcaption{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.mini-t{font-weight:600}
+.mini-s{font-size:var(--fs-13);color:var(--muted)}
+.cc{position:relative;height:156px;margin-left:28px}
+.cc-area{position:absolute;left:0;right:0;top:16px;bottom:0;display:flex}
+.cc-grid{position:absolute;left:0;right:0;height:0;border-top:1px solid var(--border)}
+.cc-grid span{position:absolute;right:100%;top:0;transform:translateY(-50%);padding-right:6px;font-size:var(--fs-12);line-height:1;color:var(--muted);font-variant-numeric:tabular-nums}
+.cc-col{position:relative;flex:1 1 0;min-width:0;display:flex;justify-content:center;align-items:flex-end}
+.cc-col:focus-visible{outline-offset:0}
+.cc-bar{width:min(24px,60%);height:var(--h);background:var(--ch-seq);border-radius:4px 4px 0 0}
+.cc-col:hover .cc-bar,.cc-col:focus .cc-bar{filter:brightness(1.18)}
+.cc-val{position:absolute;left:0;right:0;bottom:calc(var(--h) + 2px);text-align:center;font-size:var(--fs-12);font-weight:600;line-height:1.3;color:var(--ink)}
+.cc-x{display:flex;margin:4px 0 0 28px}
+.cc-x span{flex:1 1 0;min-width:0;text-align:center;font-size:var(--fs-12);color:var(--muted)}
+/* Bar 100% bertumpuk per unit: celah 2px warna permukaan, area sentuh 24px, batang 12px */
+.sb-list{list-style:none;margin:0;padding:4px 16px 8px}
+.sb-row{padding:12px 0}
+.sb-row+.sb-row{border-top:1px solid var(--border)}
+.sb-head{display:flex;justify-content:space-between;gap:8px}
+.sb-head strong{font-weight:600}
+.sb-head span{color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sb-track{position:relative;display:flex;gap:2px;margin:2px 0}
+.sb-seg{position:relative;flex:0 1 0;min-width:6px;height:24px}
+.sb-seg::before{content:"";position:absolute;left:0;right:0;top:6px;height:12px;border-radius:4px;background:var(--c)}
+.sb-seg:hover::before,.sb-seg:focus::before{filter:brightness(1.15)}
+.sb-seg:focus-visible{outline-offset:1px}
+.sb-track .ch-tip{bottom:calc(100% + 2px)}
+.sb-fig{display:flex;flex-wrap:wrap;gap:2px 16px;font-size:var(--fs-13);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.sb-fig>span{display:inline-flex;align-items:center;gap:6px}
+.sb-fig .sw{width:8px;height:8px;border-radius:2px}
+/* Meter realisasi anggaran: satu hue, track --subtle, penanda target bercincin warna permukaan */
+.mt-list{list-style:none;margin:0;padding:4px 16px 8px}
+.mt-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2fr) 17em;gap:4px 16px;align-items:center;padding:12px 0}
+.mt-row+.mt-row{border-top:1px solid var(--border)}
+.mt-name{font-weight:600;min-width:0}
+.mt-track{position:relative;display:block;height:12px;background:var(--subtle);box-shadow:inset 0 0 0 1px var(--border);border-radius:0 4px 4px 0}
+.mt-fill{position:absolute;left:0;top:0;bottom:0;background:var(--ch-seq);border-radius:0 4px 4px 0}
+.mt-target{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;border-radius:1px;background:var(--ink);box-shadow:0 0 0 2px var(--card)}
+.mt-fig{text-align:right;font-size:var(--fs-13);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.mt-fig strong{color:var(--ink);font-size:var(--fs-14)}
+.mt-d{display:block}
+.mt-total{border-top:2px solid var(--border-input)!important}
+@media (max-width:760px){.mt-row{grid-template-columns:minmax(0,1fr) auto}.mt-bar{grid-column:1/-1;grid-row:2}}
+@media (max-width:420px){.mt-row{grid-template-columns:1fr}.mt-bar{grid-row:auto}.mt-fig{text-align:left}}
+/* Tampilan tabel untuk setiap grafik */
+.tview{border-top:1px solid var(--border);padding:8px 16px 12px}
+.tview summary{display:inline-flex;align-items:center;gap:6px;min-height:32px;font-size:var(--fs-13);font-weight:600;color:var(--ink-2);cursor:pointer}
+.tview summary:hover{text-decoration:underline;text-underline-offset:3px}
+.tview .tv-hide,.tview[open] .tv-show{display:none}
+.tview[open] .tv-hide{display:inline}
+.tview .tbl-wrap{margin-top:8px;border:1px solid var(--border);border-radius:8px}
+.tview table.tbl{min-width:420px}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 .hnav .ic{width:17px;height:17px;stroke-width:1.7}
@@ -1082,6 +1167,145 @@ function filterUsers(){
 }
 
 /* ---------- Halaman penolakan peran (tampilan saja; otorisasi tetap di server) ---------- */
+/* =====================================================================
+   HALAMAN 9 — DASHBOARD PIMPINAN (#/dashboard)
+   Kabagrenmin: lengkap, dengan tautan ke surat yang menunggu keputusan.
+   Superadmin : mode baca — tanpa tombol keputusan dan tanpa tautan ke ruang
+                kerja unit (server menolak Superadmin dari endpoint operasional).
+   Operator   : tidak berhak; halaman menjelaskan alasannya.
+   SEMUA ANGKA DATA CONTOH dan saling konsisten: total per unit = ringkasan
+   (selesai 46, berjalan 23, terlambat 5). Tanggal acuan 12 Nov 2026.
+   ===================================================================== */
+const EX_TODAY=Date.UTC(2026,10,12);
+const EX_PERIODS=['30 hari terakhir','Triwulan ini','Tahun ini'];
+const EX_MON={Mei:'Mei',Jun:'Juni',Jul:'Juli',Agu:'Agustus',Sep:'September',Okt:'Oktober'};
+const EX_TREND=[['Mei',34,15],['Jun',31,14],['Jul',36,19],['Agu',28,12],['Sep',40,17],['Okt',45,21]]; /* [bulan, masuk, keluar] */
+const EX_DISPO=[['urmin',18,9,2],['ren',12,6,1],['sumda',9,5,2],['binfung',7,3,0]]; /* [unit, selesai, berjalan, terlambat] */
+const EX_ONTIME=38; /* dari 46 disposisi selesai, 38 sesuai tenggat */
+const EX_BUDGET=[['Dukungan manajemen dan tata kelola',4850,3977],['Operasional unit',12400,9300],['Peningkatan kapasitas SDM',2100,1260],['Sarana dan prasarana',6750,3443],['Pembinaan fungsi dan pengawasan internal',1200,972]]; /* [program, pagu, realisasi] dalam juta rupiah */
+const EX_TARGET=80; /* target realisasi kumulatif s.d. November, % pagu */
+const EX_ARAHAN=[
+ {t:'Lengkapi data dukung SPIP semester II',u:'binfung',due:'2026-11-10',st:B('danger','Terlambat')},
+ {t:'Percepat realisasi belanja sarana dan prasarana',u:'ren',due:'2026-11-15',st:B('info','Dalam proses')},
+ {t:'Tertibkan penomoran surat keluar sesuai PER-02',u:'urmin',due:'2026-11-20',st:B('info','Dalam proses')},
+ {t:'Inventarisasi BMN rusak berat untuk usul hapus',u:'sumda',due:'2026-11-28',st:B('neutral','Belum ditanggapi')}
+];
+const EX_STATUS=[['Selesai','--ch-ok'],['Berjalan','--ch-run'],['Terlambat','--ch-late']];
+function exParseID(s){const [d,m,y]=s.split(' ');return y+'-'+String(MONTHS.indexOf(m)+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+function exRel(iso){/* sisa hari terhadap 12 Nov 2026; lewat tenggat = merah + ikon + teks */
+ const [y,m,d]=iso.split('-').map(Number), n=Math.round((Date.UTC(y,m-1,d)-EX_TODAY)/864e5);
+ if(n<0)return '<span class="due-late">'+ic('alert',14)+'lewat '+(-n)+' hari</span>';
+ return n===0?'hari ini':n===1?'besok':n+' hari lagi';
+}
+const exRp=j=>'Rp'+(j/1000).toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2})+' miliar';
+const exRpFull=j=>(j*1e6).toLocaleString('id-ID');
+function exTip(pos,html,bottom){return '<span class="ch-tip" aria-hidden="true" style="left:'+pos+'%;transform:translateX(-'+pos+'%)'+(bottom?';bottom:'+bottom:'')+'">'+html+'</span>';}
+function exKey(c){return '<span class="k" style="--c:var('+c+')"></span>';}
+function tview(table){return '<details class="tview"><summary><span class="tv-show">Tampilkan tabel</span><span class="tv-hide">Sembunyikan tabel</span></summary>'+table+'</details>';}
+
+function exStats(per,sa){
+ const L=['Surat masuk','Disposisi berjalan','Disposisi terlambat','Penyelesaian tepat waktu'];
+ const H=['#/urmin/surat-masuk','#/urmin/disposisi','#/urmin/disposisi',''];
+ const dt=i=>'<dt>'+(!sa&&H[i]?'<a href="'+H[i]+'">'+L[i]+'</a>':L[i])+'</dt>';
+ if(S.state==='error')return '';
+ if(S.state==='loading')return '<dl class="stats" aria-busy="true">'+L.map((l,i)=>'<div>'+dt(i)+'<dd><span class="sk" style="display:block;width:56px;height:24px;margin:4px 0" aria-hidden="true"></span><span class="hint">Memuat…</span></dd></div>').join('')+'</dl>';
+ if(S.state==='empty')return '<dl class="stats">'+L.map((l,i)=>'<div>'+dt(i)+'<dd>'+(i===3?'–':'0')+'<span class="hint">'+(i===3?'Belum ada disposisi selesai':'Belum ada data '+per.toLowerCase())+'</span></dd></div>').join('')+'</dl>';
+ const sum=k=>EX_DISPO.reduce((a,r)=>a+r[k],0), done=sum(1), run=sum(2), late=sum(3);
+ const pct=Math.round(EX_ONTIME/done*100);
+ return '<dl class="stats">'+
+  '<div>'+dt(0)+'<dd>42<span class="hint">'+esc(per)+' · +6 dari periode sebelumnya</span></dd></div>'+
+  '<div>'+dt(1)+'<dd>'+run+'<span class="hint">Masih dalam tenggat · +4 dari periode sebelumnya</span></dd></div>'+
+  '<div>'+dt(2)+'<dd class="late">'+ic('alert',20)+late+'<span class="hint">Tenggat lewat · 2 lebih sedikit dari periode sebelumnya</span></dd></div>'+
+  '<div>'+dt(3)+'<dd>'+pct+'%<span class="hint">'+EX_ONTIME+' dari '+done+' selesai sesuai tenggat · periode sebelumnya 79%</span></dd></div></dl>';
+}
+
+function exDecisions(sa){
+ const dsp=SM.filter(s=>s.st.t==='Belum dibuka Kabagrenmin'), ttd=SK.filter(s=>s.st.t==='Menunggu persetujuan');
+ const row=(href,s,meta,what)=>'<li class="job"><span class="job-t">'+esc(s.no||s.ag)+' · '+esc(s.hal)+'</span>'+
+  (sa?klas(s.k):'<a class="btn btn-sm" href="'+href+'">Buka surat<span class="sr-only"> '+esc(s.no||s.ag)+' untuk '+what+'</span></a>')+'<span class="meta">'+meta+'</span></li>';
+ const grp=(title,items)=>items.length?'<div class="dec-group"><h3>'+title+' ('+items.length+')</h3><ul class="rows">'+items.join('')+'</ul></div>':'';
+ return grp(sa?'Menunggu disposisi Kabagrenmin':'Menunggu disposisi Anda',dsp.map(s=>row('#/urmin/surat-masuk/'+s.id,s,'Dari '+esc(s.dari)+' · diterima '+s.terima+(s.due?' · batas respons '+s.due+' ('+exRel(exParseID(s.due))+')':''),'disposisi')))+
+  grp(sa?'Menunggu tanda tangan Kabagrenmin':'Menunggu tanda tangan Anda',ttd.map(s=>row('#/urmin/surat-keluar/'+s.id,s,'Untuk '+esc(s.ke)+' · diajukan '+esc(s.by)+', '+s.tgl,'tanda tangan')));
+}
+
+function exArahan(sa){
+ return '<ul class="rows">'+EX_ARAHAN.slice().sort((a,b)=>a.due<b.due?-1:1).map(a=>'<li class="job">'+(sa?'<span class="job-t">'+esc(a.t)+'</span>':'<a class="row-link" href="#/arahan">'+esc(a.t)+'</a>')+badge(a.st)+'<span class="meta">'+UNITS[a.u].short+' · tenggat '+fmtISO(a.due)+' · '+exRel(a.due)+'</span></li>').join('')+'</ul>';
+}
+
+function exColumns(id,label,idx,noun,max){
+ const v=EX_TREND.map(r=>r[idx]), n=v.length, tot=v.reduce((a,b)=>a+b,0);
+ const hi=Math.max(...v), lo=Math.min(...v);
+ const sum=label+' per bulan, Mei sampai Oktober 2026, total '+tot+'. Tertinggi '+EX_MON[EX_TREND[v.indexOf(hi)][0]]+' '+hi+', terendah '+EX_MON[EX_TREND[v.indexOf(lo)][0]]+' '+lo+'. Gunakan tombol panah untuk membaca tiap bulan.';
+ return '<figure class="mini"><figcaption><span class="mini-t">'+label+'</span><span class="mini-s">Total '+tot+' surat</span></figcaption>'+
+  '<div class="cc"><div class="cc-area" role="group" aria-label="'+esc(sum)+'" data-roving>'+
+  [0,25,50].map(t=>'<span class="cc-grid" style="bottom:'+(t/max*100)+'%" aria-hidden="true"><span>'+t+'</span></span>').join('')+
+  EX_TREND.map((r,i)=>{const h=(r[idx]/max*100).toFixed(1)+'%', pos=((i+.5)/n*100).toFixed(1);
+   return '<span class="cc-col" data-mark tabindex="'+(i?-1:0)+'" role="img" aria-label="'+EX_MON[r[0]]+' 2026: '+r[idx]+' '+noun+'" style="--h:'+h+'"><span class="cc-bar"></span>'+(i===n-1?'<span class="cc-val" aria-hidden="true">'+r[idx]+'</span>':'')+'</span>'+
+    exTip(pos,'<strong>'+r[idx]+' surat</strong>'+exKey('--ch-seq')+EX_MON[r[0]]+' 2026','calc('+h+' + 8px)');}).join('')+
+  '</div></div><div class="cc-x" aria-hidden="true">'+EX_TREND.map(r=>'<span>'+r[0]+'</span>').join('')+'</div></figure>';
+}
+function exTrend(){
+ return '<div class="minis">'+exColumns('tr-in','Surat masuk',1,'surat masuk',50)+exColumns('tr-out','Surat keluar',2,'surat keluar',50)+'</div>'+
+  tview(tbl('t-ex-trend','Volume persuratan per bulan, Mei–Oktober 2026',[{h:'Bulan',rh:1},{h:'Surat masuk',num:1},{h:'Surat keluar',num:1}],
+   EX_TREND.map(r=>[EX_MON[r[0]]+' 2026',r[1],r[2]]).concat([['<strong>Total</strong>','<strong>'+EX_TREND.reduce((a,r)=>a+r[1],0)+'</strong>','<strong>'+EX_TREND.reduce((a,r)=>a+r[2],0)+'</strong>']])));
+}
+
+function exStack(){
+ let first=true;
+ const rows=EX_DISPO.map(r=>{
+  const u=UNITS[r[0]], v=[r[1],r[2],r[3]], tot=v[0]+v[1]+v[2], pct=v.map(x=>Math.round(x/tot*100));
+  let acc=0;
+  const segs=v.map((x,i)=>{if(!x)return '';const mid=((acc+x/2)/tot*100).toFixed(1);acc+=x;const ti=first?0:-1;first=false;
+   return '<span class="sb-seg" data-mark tabindex="'+ti+'" role="img" aria-label="'+u.short+', '+EX_STATUS[i][0]+': '+x+' dari '+tot+' disposisi, '+pct[i]+' persen" style="--c:var('+EX_STATUS[i][1]+');flex-grow:'+x+'"></span>'+
+    exTip(mid,'<strong>'+x+' disposisi · '+pct[i]+'%</strong>'+exKey(EX_STATUS[i][1])+EX_STATUS[i][0]+' · '+u.short);}).join('');
+  const fig=EX_STATUS.map((s,i)=>{const t=s[0]+' '+v[i]+' ('+pct[i]+'%)';
+   return i===2&&v[i]?'<span class="due-late">'+ic('alert',14)+t+'</span>':'<span><span class="sw" style="--c:var('+s[1]+')" aria-hidden="true"></span>'+t+'</span>';}).join('');
+  return '<li class="sb-row"><div class="sb-head"><strong>'+u.short+'</strong><span>'+tot+' disposisi</span></div><div class="sb-track">'+segs+'</div><p class="sb-fig">'+fig+'</p></li>';
+ }).join('');
+ return '<ul class="legend" aria-label="Keterangan warna">'+EX_STATUS.map(s=>'<li><span class="sw" style="--c:var('+s[1]+')" aria-hidden="true"></span>'+s[0]+'</li>').join('')+'</ul>'+
+  '<ul class="sb-list" data-roving aria-label="Status disposisi per unit. Gunakan tombol panah untuk membaca tiap bagian.">'+rows+'</ul>'+
+  tview(tbl('t-ex-dispo','Status disposisi per unit',[{h:'Unit',rh:1},{h:'Selesai',num:1},{h:'Berjalan',num:1},{h:'Terlambat',num:1},{h:'Total',num:1}],
+   EX_DISPO.map(r=>[UNITS[r[0]].short,r[1],r[2],r[3],r[1]+r[2]+r[3]])));
+}
+
+function exBudget(){
+ const tp=EX_BUDGET.reduce((a,r)=>a+r[1],0), tr=EX_BUDGET.reduce((a,r)=>a+r[2],0);
+ const gap=pc=>{const d=pc-EX_TARGET;return d>0?d+' poin di atas target':d<0?(-d)+' poin di bawah target':'Tepat sesuai target';};
+ const row=(name,p,r,total)=>{const pc=Math.round(r/p*100);
+  return '<li class="mt-row'+(total?' mt-total':'')+'"><span class="mt-name">'+esc(name)+'</span><span class="mt-bar" aria-hidden="true"><span class="mt-track"><span class="mt-fill" style="width:'+Math.min(pc,100)+'%"></span><span class="mt-target" style="left:'+EX_TARGET+'%"></span></span></span>'+
+   '<span class="mt-fig"><strong>'+pc+'%</strong> · '+exRp(r)+' dari '+exRp(p)+'<span class="mt-d">'+gap(pc)+'</span></span></li>';};
+ return '<ul class="legend" aria-label="Keterangan grafik"><li><span class="sw" style="--c:var(--ch-seq)" aria-hidden="true"></span>Realisasi</li><li><span class="sw-line" aria-hidden="true"></span>Target '+EX_TARGET+'% s.d. November</li></ul>'+
+  '<ul class="mt-list">'+EX_BUDGET.map(b=>row(b[0],b[1],b[2])).join('')+row('Total BagRenmin',tp,tr,true)+'</ul>'+
+  tview(tbl('t-ex-budget','Realisasi anggaran per program, tahun anggaran 2026',[{h:'Program',rh:1},{h:'Pagu (Rp)',num:1},{h:'Realisasi (Rp)',num:1},{h:'Realisasi',num:1},{h:'Terhadap target '+EX_TARGET+'%',num:1}],
+   EX_BUDGET.concat([['Total BagRenmin',tp,tr]]).map(b=>{const pc=Math.round(b[2]/b[1]*100),d=pc-EX_TARGET;return [esc(b[0]),exRpFull(b[1]),exRpFull(b[2]),pc+'%',(d>0?'+':d<0?'−':'')+Math.abs(d)+' poin'];})));
+}
+
+function viewExecDash(){
+ const sa=S.role==='superadmin', per=EX_PERIODS[S.dashPeriod||0];
+ const cb=x=>'<div class="compact">'+x+'</div>';
+ return '<div class="exec">'+crumbs([['Portal','#/portal'],['Dashboard pimpinan']])+
+ phead('Dashboard pimpinan','Kondisi persuratan, disposisi, dan anggaran keempat unit BagRenmin dalam satu tampilan.')+
+ (sa?'<p class="callout" role="note">'+ic('info',18)+'<span>Mode baca untuk Superadmin. Ringkasan ini dapat dilihat, tetapi disposisi dan tanda tangan hanya dilakukan Kabagrenmin dari ruang kerja Urmin.</span></p>':'')+
+ '<div class="toolrow"><div class="fgroup"><label class="flabel" for="f-dash-period">Periode</label><select class="input" id="f-dash-period">'+EX_PERIODS.map((p,i)=>'<option value="'+i+'"'+((S.dashPeriod||0)===i?' selected':'')+'>'+p+'</option>').join('')+'</select></div>'+
+ '<button type="button" class="btn" data-action="retry">'+ic('refresh',16)+'Perbarui</button>'+
+ '<p class="dash-meta">Diperbarui 12 Nov 2026, 08.00 WIB · sumber: register persuratan, disposisi, dan anggaran SDL</p><span class="sample" style="align-self:center">Data contoh</span></div>'+
+ exStats(per,sa)+
+ '<div class="dash-grid">'+
+ panel({id:'h-ex-dec',title:sa?'Menunggu keputusan pimpinan':'Perlu keputusan Anda',sub:sa?'Mode baca: tidak ada tombol keputusan untuk akun Superadmin.':'Surat yang menunggu disposisi atau tanda tangan Anda, dari batas waktu terdekat.',
+  body:cb(dataBlock({noun:'daftar keputusan',rows:3,normal:()=>exDecisions(sa),icon:'check',emptyTitle:sa?'Tidak ada yang menunggu keputusan':'Tidak ada yang menunggu keputusan Anda',emptyText:'Surat yang diajukan untuk disposisi atau tanda tangan akan muncul di sini.'}))})+
+ panel({id:'h-ex-arahan',title:'Arahan pimpinan berjalan',link:sa?'':'<a class="tlink" href="#/arahan">Lihat semua arahan</a>',sub:'Diurutkan dari tenggat terdekat.',
+  body:cb(dataBlock({noun:'arahan',rows:3,normal:()=>exArahan(sa),icon:'megaphone',emptyTitle:'Tidak ada arahan berjalan',emptyText:'Arahan yang Anda berikan ke unit dan belum selesai akan tampil di sini.',emptyAction:sa?'':'<a class="btn" href="#/arahan">Buka Arahan</a>'}))})+
+ '</div><div class="exec-grid">'+
+ panel({id:'h-ex-trend',title:'Volume persuratan',link:sa?'':'<a class="tlink" href="#/urmin/surat-masuk">Buka surat masuk</a>',sub:'Enam bulan penuh terakhir (Mei–Oktober 2026). Kedua grafik memakai skala yang sama, 0–50 surat.',
+  body:cb(dataBlock({noun:'tren persuratan',rows:4,normal:exTrend,icon:'chart',emptyTitle:'Belum ada surat pada enam bulan terakhir',emptyText:'Grafik terisi setelah petugas Urmin mencatat surat masuk dan surat keluar.'}))})+
+ panel({id:'h-ex-dispo',title:'Status disposisi per unit',sub:'74 disposisi pada periode ini. Terlambat berarti tenggat sudah lewat dan belum selesai.',
+  body:cb(dataBlock({noun:'status disposisi',rows:4,normal:exStack,icon:'clipboard',emptyTitle:'Belum ada disposisi pada periode ini',emptyText:'Disposisi yang diteruskan ke unit akan dihitung di sini per status.'}))})+
+ '</div>'+
+ panel({id:'h-ex-budget',title:'Realisasi anggaran per program',link:sa?'':'<a class="tlink" href="#/unit/ren">Buka Subbagren</a>',sub:'Realisasi terhadap pagu tahun anggaran 2026, data Subbagren. Garis tegak pada tiap bar adalah target realisasi s.d. November.',
+  body:cb(dataBlock({noun:'realisasi anggaran',rows:5,normal:exBudget,icon:'chart',emptyTitle:'Pagu anggaran belum diinput',emptyText:'Subbagren menginput pagu per program setelah DIPA disahkan. Realisasi tampil setelah pagu tersedia.'}))})+
+ '</div>';
+}
+
 function denyPage(what){return phead(what+' tidak tersedia untuk akun ini','Akun Superadmin mengelola pengguna dan akses. Server menolak permintaan ruang kerja unit dari akun ini, jadi halaman ini tidak memuat data.','<a class="btn btn-primary" href="#/kelola/pengguna">Buka Pengguna & akses</a>');}
 
 /* =====================================================================
@@ -1120,7 +1344,11 @@ function resolve(p){
   return {nav:'kelola',title:t,body:wrap(b==='role'?viewRoles():viewUsers())};
  }
  if(a==='tugas'){if(sa)return {nav:'',title:'Tugas',body:wrap(denyPage('Tugas disposisi'))};return {nav:'tugas',title:'Tugas disposisi',body:wrap(viewDisposisi(false))};}
- const simple={arahan:'Arahan pimpinan',inbox:'Inbox distribusi',dashboard:'Dashboard pimpinan',profil:'Profil saya'};
+ if(a==='dashboard'){ /* HALAMAN 9 */
+  if(S.role==='operator')return {nav:'',title:'Dashboard pimpinan',body:wrap(crumbs([['Portal','#/portal'],['Dashboard pimpinan']])+phead('Dashboard pimpinan khusus Kabagrenmin','Ringkasan ini disiapkan untuk pimpinan BagRenmin. Akun Anda tidak memiliki akses, jadi halaman ini tidak memuat data. Di prototipe, pilih peran Kabagrenmin di bilah bawah untuk melihatnya.','<a class="btn btn-primary" href="#/portal">Buka Portal</a>'))};
+  return {nav:'dashboard',title:'Dashboard pimpinan',body:wrap(viewExecDash())};
+ }
+ const simple={arahan:'Arahan pimpinan',inbox:'Inbox distribusi',profil:'Profil saya'};
  if(simple[a]){
   if(a==='profil'){const m=me();return {nav:'',title:'Profil saya',body:wrap(crumbs([['Portal','#/portal'],['Profil saya']])+phead('Profil saya','Data akun Anda. Perubahan nama dan email dilakukan oleh administrator.')+panel({id:'h-prof',title:'Akun',body:'<div class="panel-b"><dl class="dl"><div><dt>Nama</dt><dd>'+esc(m.name)+'</dd></div><div><dt>Jabatan</dt><dd>'+esc(m.title)+'</dd></div><div><dt>Email</dt><dd>'+esc(m.email)+'</dd></div></dl>'+themeSet('tp-p')+'</div>'}))};}
   return {nav:a,title:simple[a],body:wrap(crumbs([['Portal','#/portal'],[simple[a]]])+notBuilt(simple[a]))};
@@ -1152,7 +1380,7 @@ function applyTheme(){
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
 
 /* ---------- Bilah prototipe ---------- */
-const PAGES=[['#/login','Login'],['#/portal','Portal · Beranda'],['#/portal/berita','Portal · Berita & pengumuman'],['#/portal/kalender','Portal · Kalender'],['#/portal/sop','Portal · SOP & peraturan'],['#/urmin','Urmin · Dashboard'],['#/urmin/surat-masuk','Urmin · Surat masuk'],['#/urmin/surat-masuk/sm1','Urmin · Detail surat masuk'],['#/urmin/surat-keluar','Urmin · Surat keluar'],['#/urmin/surat-keluar/sk2','Urmin · Detail surat keluar'],['#/urmin/disposisi','Urmin · Disposisi'],['#/unit/ren','Subbagren · Dashboard'],['#/unit/sumda','Subbagsumda · Dashboard'],['#/unit/binfung','Subbagbinfung · Dashboard'],['#/unit/sumda/layanan','Subbagsumda · Modul segera hadir'],['#/kelola/pengguna','Kelola · Pengguna & akses'],['#/kelola/role','Kelola · Role & izin']];
+const PAGES=[['#/login','Login'],['#/portal','Portal · Beranda'],['#/portal/berita','Portal · Berita & pengumuman'],['#/portal/kalender','Portal · Kalender'],['#/portal/sop','Portal · SOP & peraturan'],['#/urmin','Urmin · Dashboard'],['#/urmin/surat-masuk','Urmin · Surat masuk'],['#/urmin/surat-masuk/sm1','Urmin · Detail surat masuk'],['#/urmin/surat-keluar','Urmin · Surat keluar'],['#/urmin/surat-keluar/sk2','Urmin · Detail surat keluar'],['#/urmin/disposisi','Urmin · Disposisi'],['#/unit/ren','Subbagren · Dashboard'],['#/unit/sumda','Subbagsumda · Dashboard'],['#/unit/binfung','Subbagbinfung · Dashboard'],['#/unit/sumda/layanan','Subbagsumda · Modul segera hadir'],['#/dashboard','Dashboard pimpinan'],['#/kelola/pengguna','Kelola · Pengguna & akses'],['#/kelola/role','Kelola · Role & izin']];
 $('#p-page').innerHTML='<option value="">Halaman lain</option>'+PAGES.map(p=>'<option value="'+p[0]+'">'+p[1]+'</option>').join('');
 function syncBar(){
  const h=location.hash||'#/login';
@@ -1167,6 +1395,7 @@ $('#p-page').addEventListener('change',e=>{
  const v=e.target.value;if(!v)return;
  if(v.indexOf('#/kelola')===0&&S.role!=='superadmin'){S.role='superadmin';toast('Peran diganti ke Superadmin untuk halaman ini.');}
  else if(/^#\/(urmin|unit|tugas|inbox|arahan)/.test(v)&&S.role==='superadmin'){S.role='operator';toast('Peran diganti ke Operator Urmin untuk halaman ini.');}
+ else if(v==='#/dashboard'&&S.role==='operator'){S.role='kabag';toast('Peran diganti ke Kabagrenmin untuk halaman ini.');}
  location.hash=v;
 });
 $('#p-role').addEventListener('change',e=>{S.role=e.target.value;render({focus:false});toast('Peran: '+me().title+'.');});
@@ -1308,6 +1537,24 @@ Object.assign(ACTIONS,{
   if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(v).then(done,fallback);else fallback();
  },
  'secret-close'(){const x=S.newUser;closeOverlays(false);if(x)toast('Akun '+x.n+' ditambahkan. Tetapkan unit dan role lewat Ubah akses.');S.newUser=null;}
+});
+/* ---------- Interaksi halaman 9 (Dashboard pimpinan) ---------- */
+/* Grafik: satu tab stop per grafik; panah/Home/End berpindah antar-mark (roving tabindex).
+   Fokus pada mark menampilkan tooltip yang sama dengan hover. */
+document.addEventListener('keydown',e=>{
+ const t=e.target;if(!t.hasAttribute||!t.hasAttribute('data-mark'))return;
+ const g=t.closest('[data-roving]');if(!g)return;
+ const k=e.key;if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(k))return;
+ e.preventDefault();
+ const m=$$('[data-mark]',g);let i=m.indexOf(t);
+ i=k==='Home'?0:k==='End'?m.length-1:(k==='ArrowRight'||k==='ArrowDown')?Math.min(m.length-1,i+1):Math.max(0,i-1);
+ m.forEach(x=>{x.tabIndex=-1;});m[i].tabIndex=0;m[i].focus();
+});
+document.addEventListener('change',e=>{
+ if(e.target.id!=='f-dash-period')return;
+ S.dashPeriod=+e.target.value;render({focus:false});
+ const s=$('#f-dash-period');if(s)s.focus();
+ toast('Periode: '+EX_PERIODS[S.dashPeriod]+'. Di prototipe, angka contoh tidak berubah per periode.');
 });
 document.addEventListener('input',e=>{if(e.target.id==='q-users')filterUsers();});
 document.addEventListener('change',e=>{if(e.target.id==='f-u-st')filterUsers();});
